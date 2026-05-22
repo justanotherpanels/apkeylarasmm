@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PaymentGatewayController;
 use App\Http\Controllers\Admin\SmmController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\WhatsAppController;
+use App\Http\Controllers\Admin\SystemUpdateController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -159,6 +160,9 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
     Route::post('/admin/settings', [SettingsController::class, 'update'])->name('admin.settings.update');
+    Route::get('/admin/system-update', [SystemUpdateController::class, 'index'])->name('admin.system-update.index');
+    Route::post('/admin/system-update/check', [SystemUpdateController::class, 'check'])->name('admin.system-update.check');
+    Route::post('/admin/system-update/run', [SystemUpdateController::class, 'update'])->name('admin.system-update.run');
 
     Route::get('/admin/whatsapp', [WhatsAppController::class, 'index'])->name('admin.whatsapp.index');
     Route::post('/admin/whatsapp/store', [WhatsAppController::class, 'store'])->name('admin.whatsapp.store');
@@ -206,7 +210,6 @@ Route::post('/api-frontend/deposit/history', [App\Http\Controllers\ApiFrontend\D
 Route::post('/api-frontend/profile', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'show'])->name('api-frontend.profile.show');
 Route::post('/api-frontend/profile/update-password', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'updatePassword'])->name('api-frontend.profile.update_password');
 Route::post('/api-frontend/profile/regenerate-api-key', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'regenerateApiKey'])->name('api-frontend.profile.regenerate_api_key');
-
 
 
 

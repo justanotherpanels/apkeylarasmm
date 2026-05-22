@@ -244,6 +244,19 @@
                           </g>
                         </g>
                       </svg><span>Setting</span></a></li>
+
+                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.system-update.index') }}">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3V7" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M12 17V21" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M4.93 4.93L7.76 7.76" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M16.24 16.24L19.07 19.07" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M3 12H7" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M17 12H21" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M4.93 19.07L7.76 16.24" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M16.24 7.76L19.07 4.93" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <circle cx="12" cy="12" r="3" stroke="#130F26" stroke-width="1.5"></circle>
+                      </svg><span>System Update</span></a></li>
                 </ul>
                 <div class="sidebar-img-section">
                   <div class="sidebar-img-content"><img class="img-fluid" src="{{ asset('assets/images/side-bar.png') }}" alt="">
