@@ -31,9 +31,17 @@
                 </div>
                 @endif
                 <div class="card">
-                    <div class="card-header pb-0">
-                        <h5>Deposit History</h5>
-                        <span>All deposit transactions from users.</span>
+                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5>Deposit History</h5>
+                            <span>All deposit transactions from users.</span>
+                        </div>
+                        <form method="POST" action="{{ route('admin.payment.history.sync-all') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to sync all pending deposits?');">
+                                <i class="fa fa-refresh"></i> Sync All Pending
+                            </button>
+                        </form>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

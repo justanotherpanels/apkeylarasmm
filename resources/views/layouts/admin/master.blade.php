@@ -252,6 +252,17 @@
                         </g>
                       </svg><span>WhatsApp</span></a></li>
 
+                  <li class="sidebar-list {{ request()->routeIs('admin.brevo-api.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.brevo-api.index') }}">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                          <g>
+                            <path d="M12 3C7.031 3 3 7.031 3 12C3 16.969 7.031 21 12 21C16.969 21 21 16.969 21 12C21 7.031 16.969 3 12 3ZM12 19C8.134 19 5 15.866 5 12C5 8.134 8.134 5 12 5C15.866 5 19 8.134 19 12C19 15.866 15.866 19 12 19Z" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M8 12C8 10.8954 8.89543 10 10 10H14C15.1046 10 16 10.8954 16 12C16 13.1046 15.1046 14 14 14H10C8.89543 14 8 13.1046 8 12Z" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                          </g>
+                        </g>
+                      </svg><span>Brevo API</span></a></li>
+
                   <li class="sidebar-list {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                     <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.settings.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

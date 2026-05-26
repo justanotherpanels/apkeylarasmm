@@ -83,176 +83,326 @@
         <div class="row">
           <div class="col-12">
             <div class="login-card">
-              <form class="theme-form login-form" method="POST" action="{{ route('register.post') }}">
-                @csrf
-                <h4>Create your account</h4>
-                <h6>Enter your personal details to create account</h6>
+              @if (!isset($step) || $step == 1)
+                @if (!isset($showVerification))
+                  <!-- Step 1: Form Data -->
+                  <form class="theme-form login-form" method="POST" action="{{ route('register.step1') }}">
+                    @csrf
+                    <h4>Create your account</h4>
+                    <h6>Enter your email and WhatsApp number</h6>
 
-                @if ($errors->any())
-                  <div class="alert alert-danger mb-4">
-                      <ul class="mb-0">
-                          @foreach ($errors->all() as $error)
-                              <li>{{ $error }}</li>
-                          @endforeach
-                      </ul>
+                    @if (isset($success) || session('success'))
+                      <div class="alert alert-success mb-4">{{ $success ?? session('success') }}</div>
+                    @endif
+
+                    @if (isset($errors))
+                      @if (is_object($errors))
+                        @php
+                            $hasError = false;
+                            foreach ((array)$errors as $key => $error) {
+                                if (is_string($error)) {
+                                    $hasError = true;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        @if ($hasError)
+                          <div class="alert alert-danger mb-4">
+                              <ul class="mb-0">
+                                  @foreach ((array)$errors as $key => $error)
+                                      @if (is_string($error))
+                                          <li>{{ $error }}</li>
+                                      @endif
+                                  @endforeach
+                              </ul>
+                          </div>
+                        @endif
+                      @elseif (method_exists($errors, 'any') && $errors->any())
+                        <div class="alert alert-danger mb-4">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                      @endif
+                    @endif
+
+                    <div class="form-group">
+                      <label>Email Address (Gmail/Yahoo/Outlook only)</label>
+                      <div class="input-group"><span class="input-group-text"><i class="icon-email"></i></span>
+                        <input class="form-control" type="email" name="email" required="" placeholder="test@gmail.com" value="{{ old('email') }}">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>WhatsApp Number</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="icon-mobile"></i></span>
+                        <select class="form-control" name="country_code" id="country_code" required style="max-width: 120px;">
+                              <option value="93" {{ old('country_code') == '93' ? 'selected' : '' }}>+93 Afghanistan</option>
+                              <option value="355" {{ old('country_code') == '355' ? 'selected' : '' }}>+355 Albania</option>
+                              <option value="213" {{ old('country_code') == '213' ? 'selected' : '' }}>+213 Algeria</option>
+                              <option value="376" {{ old('country_code') == '376' ? 'selected' : '' }}>+376 Andorra</option>
+                              <option value="244" {{ old('country_code') == '244' ? 'selected' : '' }}>+244 Angola</option>
+                              <option value="54" {{ old('country_code') == '54' ? 'selected' : '' }}>+54 Argentina</option>
+                              <option value="374" {{ old('country_code') == '374' ? 'selected' : '' }}>+374 Armenia</option>
+                              <option value="61" {{ old('country_code') == '61' ? 'selected' : '' }}>+61 Australia</option>
+                              <option value="43" {{ old('country_code') == '43' ? 'selected' : '' }}>+43 Austria</option>
+                              <option value="994" {{ old('country_code') == '994' ? 'selected' : '' }}>+994 Azerbaijan</option>
+                              <option value="973" {{ old('country_code') == '973' ? 'selected' : '' }}>+973 Bahrain</option>
+                              <option value="880" {{ old('country_code') == '880' ? 'selected' : '' }}>+880 Bangladesh</option>
+                              <option value="375" {{ old('country_code') == '375' ? 'selected' : '' }}>+375 Belarus</option>
+                              <option value="32" {{ old('country_code') == '32' ? 'selected' : '' }}>+32 Belgium</option>
+                              <option value="55" {{ old('country_code') == '55' ? 'selected' : '' }}>+55 Brazil</option>
+                              <option value="673" {{ old('country_code') == '673' ? 'selected' : '' }}>+673 Brunei</option>
+                              <option value="359" {{ old('country_code') == '359' ? 'selected' : '' }}>+359 Bulgaria</option>
+                              <option value="855" {{ old('country_code') == '855' ? 'selected' : '' }}>+855 Cambodia</option>
+                              <option value="237" {{ old('country_code') == '237' ? 'selected' : '' }}>+237 Cameroon</option>
+                              <option value="1" {{ old('country_code') == '1' ? 'selected' : '' }}>+1 Canada/USA</option>
+                              <option value="56" {{ old('country_code') == '56' ? 'selected' : '' }}>+56 Chile</option>
+                              <option value="86" {{ old('country_code') == '86' ? 'selected' : '' }}>+86 China</option>
+                              <option value="57" {{ old('country_code') == '57' ? 'selected' : '' }}>+57 Colombia</option>
+                              <option value="385" {{ old('country_code') == '385' ? 'selected' : '' }}>+385 Croatia</option>
+                              <option value="357" {{ old('country_code') == '357' ? 'selected' : '' }}>+357 Cyprus</option>
+                              <option value="420" {{ old('country_code') == '420' ? 'selected' : '' }}>+420 Czech Republic</option>
+                              <option value="45" {{ old('country_code') == '45' ? 'selected' : '' }}>+45 Denmark</option>
+                              <option value="20" {{ old('country_code') == '20' ? 'selected' : '' }}>+20 Egypt</option>
+                              <option value="372" {{ old('country_code') == '372' ? 'selected' : '' }}>+372 Estonia</option>
+                              <option value="251" {{ old('country_code') == '251' ? 'selected' : '' }}>+251 Ethiopia</option>
+                              <option value="358" {{ old('country_code') == '358' ? 'selected' : '' }}>+358 Finland</option>
+                              <option value="33" {{ old('country_code') == '33' ? 'selected' : '' }}>+33 France</option>
+                              <option value="49" {{ old('country_code') == '49' ? 'selected' : '' }}>+49 Germany</option>
+                              <option value="233" {{ old('country_code') == '233' ? 'selected' : '' }}>+233 Ghana</option>
+                              <option value="30" {{ old('country_code') == '30' ? 'selected' : '' }}>+30 Greece</option>
+                              <option value="852" {{ old('country_code') == '852' ? 'selected' : '' }}>+852 Hong Kong</option>
+                              <option value="36" {{ old('country_code') == '36' ? 'selected' : '' }}>+36 Hungary</option>
+                              <option value="354" {{ old('country_code') == '354' ? 'selected' : '' }}>+354 Iceland</option>
+                              <option value="91" {{ old('country_code') == '91' ? 'selected' : '' }}>+91 India</option>
+                              <option value="62" {{ old('country_code', '62') == '62' ? 'selected' : '' }}>+62 Indonesia</option>
+                              <option value="98" {{ old('country_code') == '98' ? 'selected' : '' }}>+98 Iran</option>
+                              <option value="964" {{ old('country_code') == '964' ? 'selected' : '' }}>+964 Iraq</option>
+                              <option value="353" {{ old('country_code') == '353' ? 'selected' : '' }}>+353 Ireland</option>
+                              <option value="972" {{ old('country_code') == '972' ? 'selected' : '' }}>+972 Israel</option>
+                              <option value="39" {{ old('country_code') == '39' ? 'selected' : '' }}>+39 Italy</option>
+                              <option value="81" {{ old('country_code') == '81' ? 'selected' : '' }}>+81 Japan</option>
+                              <option value="962" {{ old('country_code') == '962' ? 'selected' : '' }}>+962 Jordan</option>
+                              <option value="7" {{ old('country_code') == '7' ? 'selected' : '' }}>+7 Kazakhstan</option>
+                              <option value="254" {{ old('country_code') == '254' ? 'selected' : '' }}>+254 Kenya</option>
+                              <option value="82" {{ old('country_code') == '82' ? 'selected' : '' }}>+82 South Korea</option>
+                              <option value="965" {{ old('country_code') == '965' ? 'selected' : '' }}>+965 Kuwait</option>
+                              <option value="856" {{ old('country_code') == '856' ? 'selected' : '' }}>+856 Laos</option>
+                              <option value="371" {{ old('country_code') == '371' ? 'selected' : '' }}>+371 Latvia</option>
+                              <option value="961" {{ old('country_code') == '961' ? 'selected' : '' }}>+961 Lebanon</option>
+                              <option value="218" {{ old('country_code') == '218' ? 'selected' : '' }}>+218 Libya</option>
+                              <option value="370" {{ old('country_code') == '370' ? 'selected' : '' }}>+370 Lithuania</option>
+                              <option value="352" {{ old('country_code') == '352' ? 'selected' : '' }}>+352 Luxembourg</option>
+                              <option value="853" {{ old('country_code') == '853' ? 'selected' : '' }}>+853 Macau</option>
+                              <option value="60" {{ old('country_code') == '60' ? 'selected' : '' }}>+60 Malaysia</option>
+                              <option value="960" {{ old('country_code') == '960' ? 'selected' : '' }}>+960 Maldives</option>
+                              <option value="356" {{ old('country_code') == '356' ? 'selected' : '' }}>+356 Malta</option>
+                              <option value="52" {{ old('country_code') == '52' ? 'selected' : '' }}>+52 Mexico</option>
+                              <option value="373" {{ old('country_code') == '373' ? 'selected' : '' }}>+373 Moldova</option>
+                              <option value="377" {{ old('country_code') == '377' ? 'selected' : '' }}>+377 Monaco</option>
+                              <option value="976" {{ old('country_code') == '976' ? 'selected' : '' }}>+976 Mongolia</option>
+                              <option value="212" {{ old('country_code') == '212' ? 'selected' : '' }}>+212 Morocco</option>
+                              <option value="95" {{ old('country_code') == '95' ? 'selected' : '' }}>+95 Myanmar</option>
+                              <option value="977" {{ old('country_code') == '977' ? 'selected' : '' }}>+977 Nepal</option>
+                              <option value="31" {{ old('country_code') == '31' ? 'selected' : '' }}>+31 Netherlands</option>
+                              <option value="64" {{ old('country_code') == '64' ? 'selected' : '' }}>+64 New Zealand</option>
+                              <option value="234" {{ old('country_code') == '234' ? 'selected' : '' }}>+234 Nigeria</option>
+                              <option value="47" {{ old('country_code') == '47' ? 'selected' : '' }}>+47 Norway</option>
+                              <option value="968" {{ old('country_code') == '968' ? 'selected' : '' }}>+968 Oman</option>
+                              <option value="92" {{ old('country_code') == '92' ? 'selected' : '' }}>+92 Pakistan</option>
+                              <option value="970" {{ old('country_code') == '970' ? 'selected' : '' }}>+970 Palestine</option>
+                              <option value="507" {{ old('country_code') == '507' ? 'selected' : '' }}>+507 Panama</option>
+                              <option value="51" {{ old('country_code') == '51' ? 'selected' : '' }}>+51 Peru</option>
+                              <option value="63" {{ old('country_code') == '63' ? 'selected' : '' }}>+63 Philippines</option>
+                              <option value="48" {{ old('country_code') == '48' ? 'selected' : '' }}>+48 Poland</option>
+                              <option value="351" {{ old('country_code') == '351' ? 'selected' : '' }}>+351 Portugal</option>
+                              <option value="974" {{ old('country_code') == '974' ? 'selected' : '' }}>+974 Qatar</option>
+                              <option value="40" {{ old('country_code') == '40' ? 'selected' : '' }}>+40 Romania</option>
+                              <option value="7" {{ old('country_code') == '7' ? 'selected' : '' }}>+7 Russia</option>
+                              <option value="966" {{ old('country_code') == '966' ? 'selected' : '' }}>+966 Saudi Arabia</option>
+                              <option value="381" {{ old('country_code') == '381' ? 'selected' : '' }}>+381 Serbia</option>
+                              <option value="65" {{ old('country_code') == '65' ? 'selected' : '' }}>+65 Singapore</option>
+                              <option value="421" {{ old('country_code') == '421' ? 'selected' : '' }}>+421 Slovakia</option>
+                              <option value="386" {{ old('country_code') == '386' ? 'selected' : '' }}>+386 Slovenia</option>
+                              <option value="27" {{ old('country_code') == '27' ? 'selected' : '' }}>+27 South Africa</option>
+                              <option value="34" {{ old('country_code') == '34' ? 'selected' : '' }}>+34 Spain</option>
+                              <option value="94" {{ old('country_code') == '94' ? 'selected' : '' }}>+94 Sri Lanka</option>
+                              <option value="249" {{ old('country_code') == '249' ? 'selected' : '' }}>+249 Sudan</option>
+                              <option value="46" {{ old('country_code') == '46' ? 'selected' : '' }}>+46 Sweden</option>
+                              <option value="41" {{ old('country_code') == '41' ? 'selected' : '' }}>+41 Switzerland</option>
+                              <option value="963" {{ old('country_code') == '963' ? 'selected' : '' }}>+963 Syria</option>
+                              <option value="886" {{ old('country_code') == '886' ? 'selected' : '' }}>+886 Taiwan</option>
+                              <option value="66" {{ old('country_code') == '66' ? 'selected' : '' }}>+66 Thailand</option>
+                              <option value="670" {{ old('country_code') == '670' ? 'selected' : '' }}>+670 Timor Leste</option>
+                              <option value="216" {{ old('country_code') == '216' ? 'selected' : '' }}>+216 Tunisia</option>
+                              <option value="90" {{ old('country_code') == '90' ? 'selected' : '' }}>+90 Turkey</option>
+                              <option value="256" {{ old('country_code') == '256' ? 'selected' : '' }}>+256 Uganda</option>
+                              <option value="380" {{ old('country_code') == '380' ? 'selected' : '' }}>+380 Ukraine</option>
+                              <option value="971" {{ old('country_code') == '971' ? 'selected' : '' }}>+971 UAE</option>
+                              <option value="44" {{ old('country_code') == '44' ? 'selected' : '' }}>+44 United Kingdom</option>
+                              <option value="598" {{ old('country_code') == '598' ? 'selected' : '' }}>+598 Uruguay</option>
+                              <option value="998" {{ old('country_code') == '998' ? 'selected' : '' }}>+998 Uzbekistan</option>
+                              <option value="58" {{ old('country_code') == '58' ? 'selected' : '' }}>+58 Venezuela</option>
+                              <option value="84" {{ old('country_code') == '84' ? 'selected' : '' }}>+84 Vietnam</option>
+                              <option value="967" {{ old('country_code') == '967' ? 'selected' : '' }}>+967 Yemen</option>
+                              <option value="260" {{ old('country_code') == '260' ? 'selected' : '' }}>+260 Zambia</option>
+                              <option value="263" {{ old('country_code') == '263' ? 'selected' : '' }}>+263 Zimbabwe</option>
+                        </select>
+                        <input class="form-control" type="text" name="phone" required="" placeholder="81234567890" value="{{ old('phone') }}" pattern="[0-9]*" inputmode="numeric" id="phone_input">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-primary btn-block" type="submit">Send Verification Codes</button>
+                    </div>
+                    <p>Already have an account?<a class="ms-2" href="{{ route('login') }}">Sign in</a></p>
+                  </form>
+                @else
+                  <!-- Step 1: Verification -->
+                  <div class="theme-form login-form">
+                    <h4>Verify Your Account</h4>
+                    <h6>Enter the verification codes sent to your email and WhatsApp</h6>
+
+                    @if (isset($success) || session('success'))
+                      <div class="alert alert-success mb-4">{{ $success ?? session('success') }}</div>
+                    @endif
+
+                    @if (isset($errors))
+                      @if (is_object($errors))
+                        @php
+                            $hasError = false;
+                            foreach ((array)$errors as $key => $error) {
+                                if (is_string($error)) {
+                                    $hasError = true;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        @if ($hasError)
+                          <div class="alert alert-danger mb-4">
+                              <ul class="mb-0">
+                                  @foreach ((array)$errors as $key => $error)
+                                      @if (is_string($error))
+                                          <li>{{ $error }}</li>
+                                      @endif
+                                  @endforeach
+                              </ul>
+                          </div>
+                        @endif
+                      @elseif (method_exists($errors, 'any') && $errors->any())
+                        <div class="alert alert-danger mb-4">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                      @endif
+                    @endif
+
+                    @if (!isset($brevoReady) || !$brevoReady)
+                      <div class="alert alert-warning">
+                        <small>Email verification requires Brevo API to be configured. Please configure Brevo API first in admin panel.</small>
+                      </div>
+                    @endif
+
+                    <!-- Email Verification -->
+                    <form class="mb-3" method="POST" action="{{ route('register.verify-email') }}">
+                        @csrf
+                        <div class="form-group">
+                          <label>Email OTP Code</label>
+                          <div class="input-group">
+                            <input class="form-control" type="text" name="email_otp" required="" placeholder="123456" maxlength="6" {{ isset($emailVerified) && $emailVerified ? 'disabled' : '' }}>
+                            <button type="submit" class="btn btn-info" {{ isset($emailVerified) && $emailVerified ? 'disabled' : '' }}>
+                              {{ isset($emailVerified) && $emailVerified ? '✓ Verified' : 'Verify' }}
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                      
+                      <form method="POST" action="{{ route('register.resend-email') }}">
+                        @csrf
+                        <div class="form-group">
+                          <button class="btn btn-link btn-sm" type="submit" {{ isset($emailVerified) && $emailVerified ? 'disabled' : '' }}>Resend Email OTP</button>
+                        </div>
+                      </form>
+
+                    <!-- WhatsApp Verification -->
+                    <form class="mb-3" method="POST" action="{{ route('register.verify-whatsapp') }}">
+                        @csrf
+                        <div class="form-group">
+                          <label>WhatsApp OTP Code</label>
+                          <div class="input-group">
+                            <input class="form-control" type="text" name="whatsapp_otp" required="" placeholder="123456" maxlength="6" {{ isset($whatsappVerified) && $whatsappVerified ? 'disabled' : '' }}>
+                            <button type="submit" class="btn btn-info" {{ isset($whatsappVerified) && $whatsappVerified ? 'disabled' : '' }}>
+                              {{ isset($whatsappVerified) && $whatsappVerified ? '✓ Verified' : 'Verify' }}
+                            </button>
+                          </div>
+                          </div>
+                      </form>
+                      
+                      <form method="POST" action="{{ route('register.resend-whatsapp') }}">
+                        @csrf
+                        <div class="form-group">
+                          <button class="btn btn-link btn-sm" type="submit" {{ isset($whatsappVerified) && $whatsappVerified ? 'disabled' : '' }}>Resend WhatsApp OTP</button>
+                        </div>
+                      </form>
                   </div>
                 @endif
+              @elseif ($step == 2)
+                <!-- Step 2: Final Form -->
+                <form class="theme-form login-form" method="POST" action="{{ route('register.step2') }}">
+                  @csrf
+                  <h4>Complete Your Account</h4>
+                  <h6>Enter your personal details</h6>
 
-                <div class="form-group">
-                  <label>Your Name</label>
-                  <div class="small-group">
+                  @if (session('success'))
+                    <div class="alert alert-success mb-4">{{ session('success') }}</div>
+                  @endif
+
+                  @if ($errors->any())
+                    <div class="alert alert-danger mb-4">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                  @endif
+
+                  <div class="form-group">
+                    <label>Full Name</label>
                     <div class="input-group"><span class="input-group-text"><i class="icon-user"></i></span>
                       <input class="form-control" type="text" name="full_name" required="" placeholder="Full Name" value="{{ old('full_name') }}">
                     </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Username</label>
                     <div class="input-group"><span class="input-group-text"><i class="icon-user"></i></span>
                       <input class="form-control" type="text" name="username" required="" placeholder="Username" value="{{ old('username') }}">
                     </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label>Email Address</label>
-                  <div class="input-group"><span class="input-group-text"><i class="icon-email"></i></span>
-                    <input class="form-control" type="email" name="email" required="" placeholder="Test@gmail.com" value="{{ old('email') }}">
+                  <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
+                      <input class="form-control" type="password" name="password" required="" placeholder="*********" minlength="8">
+                      <div class="show-hide"><span class="show">                         </span></div>
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label>WhatsApp Number</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="icon-mobile"></i></span>
-                    <select class="form-control" name="country_code" id="country_code" required style="max-width: 120px;">
-                          <option value="93" {{ old('country_code') == '93' ? 'selected' : '' }}>+93 Afghanistan</option>
-                          <option value="355" {{ old('country_code') == '355' ? 'selected' : '' }}>+355 Albania</option>
-                          <option value="213" {{ old('country_code') == '213' ? 'selected' : '' }}>+213 Algeria</option>
-                          <option value="376" {{ old('country_code') == '376' ? 'selected' : '' }}>+376 Andorra</option>
-                          <option value="244" {{ old('country_code') == '244' ? 'selected' : '' }}>+244 Angola</option>
-                          <option value="54" {{ old('country_code') == '54' ? 'selected' : '' }}>+54 Argentina</option>
-                          <option value="374" {{ old('country_code') == '374' ? 'selected' : '' }}>+374 Armenia</option>
-                          <option value="61" {{ old('country_code') == '61' ? 'selected' : '' }}>+61 Australia</option>
-                          <option value="43" {{ old('country_code') == '43' ? 'selected' : '' }}>+43 Austria</option>
-                          <option value="994" {{ old('country_code') == '994' ? 'selected' : '' }}>+994 Azerbaijan</option>
-                          <option value="973" {{ old('country_code') == '973' ? 'selected' : '' }}>+973 Bahrain</option>
-                          <option value="880" {{ old('country_code') == '880' ? 'selected' : '' }}>+880 Bangladesh</option>
-                          <option value="375" {{ old('country_code') == '375' ? 'selected' : '' }}>+375 Belarus</option>
-                          <option value="32" {{ old('country_code') == '32' ? 'selected' : '' }}>+32 Belgium</option>
-                          <option value="55" {{ old('country_code') == '55' ? 'selected' : '' }}>+55 Brazil</option>
-                          <option value="673" {{ old('country_code') == '673' ? 'selected' : '' }}>+673 Brunei</option>
-                          <option value="359" {{ old('country_code') == '359' ? 'selected' : '' }}>+359 Bulgaria</option>
-                          <option value="855" {{ old('country_code') == '855' ? 'selected' : '' }}>+855 Cambodia</option>
-                          <option value="237" {{ old('country_code') == '237' ? 'selected' : '' }}>+237 Cameroon</option>
-                          <option value="1" {{ old('country_code') == '1' ? 'selected' : '' }}>+1 Canada/USA</option>
-                          <option value="56" {{ old('country_code') == '56' ? 'selected' : '' }}>+56 Chile</option>
-                          <option value="86" {{ old('country_code') == '86' ? 'selected' : '' }}>+86 China</option>
-                          <option value="57" {{ old('country_code') == '57' ? 'selected' : '' }}>+57 Colombia</option>
-                          <option value="385" {{ old('country_code') == '385' ? 'selected' : '' }}>+385 Croatia</option>
-                          <option value="357" {{ old('country_code') == '357' ? 'selected' : '' }}>+357 Cyprus</option>
-                          <option value="420" {{ old('country_code') == '420' ? 'selected' : '' }}>+420 Czech Republic</option>
-                          <option value="45" {{ old('country_code') == '45' ? 'selected' : '' }}>+45 Denmark</option>
-                          <option value="20" {{ old('country_code') == '20' ? 'selected' : '' }}>+20 Egypt</option>
-                          <option value="372" {{ old('country_code') == '372' ? 'selected' : '' }}>+372 Estonia</option>
-                          <option value="251" {{ old('country_code') == '251' ? 'selected' : '' }}>+251 Ethiopia</option>
-                          <option value="358" {{ old('country_code') == '358' ? 'selected' : '' }}>+358 Finland</option>
-                          <option value="33" {{ old('country_code') == '33' ? 'selected' : '' }}>+33 France</option>
-                          <option value="49" {{ old('country_code') == '49' ? 'selected' : '' }}>+49 Germany</option>
-                          <option value="233" {{ old('country_code') == '233' ? 'selected' : '' }}>+233 Ghana</option>
-                          <option value="30" {{ old('country_code') == '30' ? 'selected' : '' }}>+30 Greece</option>
-                          <option value="852" {{ old('country_code') == '852' ? 'selected' : '' }}>+852 Hong Kong</option>
-                          <option value="36" {{ old('country_code') == '36' ? 'selected' : '' }}>+36 Hungary</option>
-                          <option value="354" {{ old('country_code') == '354' ? 'selected' : '' }}>+354 Iceland</option>
-                          <option value="91" {{ old('country_code') == '91' ? 'selected' : '' }}>+91 India</option>
-                          <option value="62" {{ old('country_code', '62') == '62' ? 'selected' : '' }}>+62 Indonesia</option>
-                          <option value="98" {{ old('country_code') == '98' ? 'selected' : '' }}>+98 Iran</option>
-                          <option value="964" {{ old('country_code') == '964' ? 'selected' : '' }}>+964 Iraq</option>
-                          <option value="353" {{ old('country_code') == '353' ? 'selected' : '' }}>+353 Ireland</option>
-                          <option value="972" {{ old('country_code') == '972' ? 'selected' : '' }}>+972 Israel</option>
-                          <option value="39" {{ old('country_code') == '39' ? 'selected' : '' }}>+39 Italy</option>
-                          <option value="81" {{ old('country_code') == '81' ? 'selected' : '' }}>+81 Japan</option>
-                          <option value="962" {{ old('country_code') == '962' ? 'selected' : '' }}>+962 Jordan</option>
-                          <option value="7" {{ old('country_code') == '7' ? 'selected' : '' }}>+7 Kazakhstan</option>
-                          <option value="254" {{ old('country_code') == '254' ? 'selected' : '' }}>+254 Kenya</option>
-                          <option value="82" {{ old('country_code') == '82' ? 'selected' : '' }}>+82 South Korea</option>
-                          <option value="965" {{ old('country_code') == '965' ? 'selected' : '' }}>+965 Kuwait</option>
-                          <option value="856" {{ old('country_code') == '856' ? 'selected' : '' }}>+856 Laos</option>
-                          <option value="371" {{ old('country_code') == '371' ? 'selected' : '' }}>+371 Latvia</option>
-                          <option value="961" {{ old('country_code') == '961' ? 'selected' : '' }}>+961 Lebanon</option>
-                          <option value="218" {{ old('country_code') == '218' ? 'selected' : '' }}>+218 Libya</option>
-                          <option value="370" {{ old('country_code') == '370' ? 'selected' : '' }}>+370 Lithuania</option>
-                          <option value="352" {{ old('country_code') == '352' ? 'selected' : '' }}>+352 Luxembourg</option>
-                          <option value="853" {{ old('country_code') == '853' ? 'selected' : '' }}>+853 Macau</option>
-                          <option value="60" {{ old('country_code') == '60' ? 'selected' : '' }}>+60 Malaysia</option>
-                          <option value="960" {{ old('country_code') == '960' ? 'selected' : '' }}>+960 Maldives</option>
-                          <option value="356" {{ old('country_code') == '356' ? 'selected' : '' }}>+356 Malta</option>
-                          <option value="52" {{ old('country_code') == '52' ? 'selected' : '' }}>+52 Mexico</option>
-                          <option value="373" {{ old('country_code') == '373' ? 'selected' : '' }}>+373 Moldova</option>
-                          <option value="377" {{ old('country_code') == '377' ? 'selected' : '' }}>+377 Monaco</option>
-                          <option value="976" {{ old('country_code') == '976' ? 'selected' : '' }}>+976 Mongolia</option>
-                          <option value="212" {{ old('country_code') == '212' ? 'selected' : '' }}>+212 Morocco</option>
-                          <option value="95" {{ old('country_code') == '95' ? 'selected' : '' }}>+95 Myanmar</option>
-                          <option value="977" {{ old('country_code') == '977' ? 'selected' : '' }}>+977 Nepal</option>
-                          <option value="31" {{ old('country_code') == '31' ? 'selected' : '' }}>+31 Netherlands</option>
-                          <option value="64" {{ old('country_code') == '64' ? 'selected' : '' }}>+64 New Zealand</option>
-                          <option value="234" {{ old('country_code') == '234' ? 'selected' : '' }}>+234 Nigeria</option>
-                          <option value="47" {{ old('country_code') == '47' ? 'selected' : '' }}>+47 Norway</option>
-                          <option value="968" {{ old('country_code') == '968' ? 'selected' : '' }}>+968 Oman</option>
-                          <option value="92" {{ old('country_code') == '92' ? 'selected' : '' }}>+92 Pakistan</option>
-                          <option value="970" {{ old('country_code') == '970' ? 'selected' : '' }}>+970 Palestine</option>
-                          <option value="507" {{ old('country_code') == '507' ? 'selected' : '' }}>+507 Panama</option>
-                          <option value="51" {{ old('country_code') == '51' ? 'selected' : '' }}>+51 Peru</option>
-                          <option value="63" {{ old('country_code') == '63' ? 'selected' : '' }}>+63 Philippines</option>
-                          <option value="48" {{ old('country_code') == '48' ? 'selected' : '' }}>+48 Poland</option>
-                          <option value="351" {{ old('country_code') == '351' ? 'selected' : '' }}>+351 Portugal</option>
-                          <option value="974" {{ old('country_code') == '974' ? 'selected' : '' }}>+974 Qatar</option>
-                          <option value="40" {{ old('country_code') == '40' ? 'selected' : '' }}>+40 Romania</option>
-                          <option value="7" {{ old('country_code') == '7' ? 'selected' : '' }}>+7 Russia</option>
-                          <option value="966" {{ old('country_code') == '966' ? 'selected' : '' }}>+966 Saudi Arabia</option>
-                          <option value="381" {{ old('country_code') == '381' ? 'selected' : '' }}>+381 Serbia</option>
-                          <option value="65" {{ old('country_code') == '65' ? 'selected' : '' }}>+65 Singapore</option>
-                          <option value="421" {{ old('country_code') == '421' ? 'selected' : '' }}>+421 Slovakia</option>
-                          <option value="386" {{ old('country_code') == '386' ? 'selected' : '' }}>+386 Slovenia</option>
-                          <option value="27" {{ old('country_code') == '27' ? 'selected' : '' }}>+27 South Africa</option>
-                          <option value="34" {{ old('country_code') == '34' ? 'selected' : '' }}>+34 Spain</option>
-                          <option value="94" {{ old('country_code') == '94' ? 'selected' : '' }}>+94 Sri Lanka</option>
-                          <option value="249" {{ old('country_code') == '249' ? 'selected' : '' }}>+249 Sudan</option>
-                          <option value="46" {{ old('country_code') == '46' ? 'selected' : '' }}>+46 Sweden</option>
-                          <option value="41" {{ old('country_code') == '41' ? 'selected' : '' }}>+41 Switzerland</option>
-                          <option value="963" {{ old('country_code') == '963' ? 'selected' : '' }}>+963 Syria</option>
-                          <option value="886" {{ old('country_code') == '886' ? 'selected' : '' }}>+886 Taiwan</option>
-                          <option value="66" {{ old('country_code') == '66' ? 'selected' : '' }}>+66 Thailand</option>
-                          <option value="670" {{ old('country_code') == '670' ? 'selected' : '' }}>+670 Timor Leste</option>
-                          <option value="216" {{ old('country_code') == '216' ? 'selected' : '' }}>+216 Tunisia</option>
-                          <option value="90" {{ old('country_code') == '90' ? 'selected' : '' }}>+90 Turkey</option>
-                          <option value="256" {{ old('country_code') == '256' ? 'selected' : '' }}>+256 Uganda</option>
-                          <option value="380" {{ old('country_code') == '380' ? 'selected' : '' }}>+380 Ukraine</option>
-                          <option value="971" {{ old('country_code') == '971' ? 'selected' : '' }}>+971 UAE</option>
-                          <option value="44" {{ old('country_code') == '44' ? 'selected' : '' }}>+44 United Kingdom</option>
-                          <option value="598" {{ old('country_code') == '598' ? 'selected' : '' }}>+598 Uruguay</option>
-                          <option value="998" {{ old('country_code') == '998' ? 'selected' : '' }}>+998 Uzbekistan</option>
-                          <option value="58" {{ old('country_code') == '58' ? 'selected' : '' }}>+58 Venezuela</option>
-                          <option value="84" {{ old('country_code') == '84' ? 'selected' : '' }}>+84 Vietnam</option>
-                          <option value="967" {{ old('country_code') == '967' ? 'selected' : '' }}>+967 Yemen</option>
-                          <option value="260" {{ old('country_code') == '260' ? 'selected' : '' }}>+260 Zambia</option>
-                          <option value="263" {{ old('country_code') == '263' ? 'selected' : '' }}>+263 Zimbabwe</option>
-                    </select>
-                    <input class="form-control" type="text" name="phone" required="" placeholder="81234567890" value="{{ old('phone') }}" pattern="[0-9]*" inputmode="numeric" id="phone_input">
+                  <div class="form-group">
+                    <div class="checkbox">
+                      <input id="checkbox1" type="checkbox" required>
+                      <label class="text-muted" for="checkbox1">Agree with <span>Privacy Policy</span></label>
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label>Password</label>
-                  <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
-                    <input class="form-control" type="password" name="password" required="" placeholder="*********">
-                    <div class="show-hide"><span class="show">                         </span></div>
+                  <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit">Create Account</button>
                   </div>
-                </div>
-                <div class="form-group">
-                  <div class="checkbox">
-                    <input id="checkbox1" type="checkbox" required>
-                    <label class="text-muted" for="checkbox1">Agree with <span>Privacy Policy</span></label>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <button class="btn btn-primary btn-block" type="submit">Create Account</button>
-                </div>
-                <p>Already have an account?<a class="ms-2" href="{{ route('login') }}">Sign in</a></p>
-              </form>
+                  <p>Already have an account?<a class="ms-2" href="{{ route('login') }}">Sign in</a></p>
+                </form>
+              @endif
             </div>
           </div>
         </div>
@@ -281,12 +431,10 @@
         const phoneInput = $('#phone_input');
         
         phoneInput.on('input', function() {
-          // Remove any non-digit characters
           let value = $(this).val().replace(/[^0-9]/g, '');
           $(this).val(value);
         });
         
-        // Prevent pasting non-digit characters
         phoneInput.on('paste', function(e) {
           e.preventDefault();
           const pastedText = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
@@ -294,7 +442,6 @@
           $(this).val(digitsOnly);
         });
         
-        // Prevent non-digit key presses
         phoneInput.on('keypress', function(e) {
           const charCode = e.which ? e.which : e.keyCode;
           if (charCode < 48 || charCode > 57) {

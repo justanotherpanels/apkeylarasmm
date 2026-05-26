@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SmmController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\WhatsAppController;
 use App\Http\Controllers\Admin\SystemUpdateController;
+use App\Http\Controllers\Admin\BrevoApiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,7 +20,34 @@ Route::get('/auth/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login.post');
 
 Route::get('/auth/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/auth/register', [AuthController::class, 'register'])->name('register.post');
+
+// Redirect all step routes GET to register
+Route::get('/auth/register/step1', function () {
+    return redirect()->route('register');
+});
+Route::get('/auth/register/verify-email', function () {
+    return redirect()->route('register');
+});
+Route::get('/auth/register/verify-whatsapp', function () {
+    return redirect()->route('register');
+});
+Route::get('/auth/register/resend-email', function () {
+    return redirect()->route('register');
+});
+Route::get('/auth/register/resend-whatsapp', function () {
+    return redirect()->route('register');
+});
+Route::get('/auth/register/step2', function () {
+    return redirect()->route('register');
+});
+
+// POST routes
+Route::post('/auth/register/step1', [AuthController::class, 'registerStep1'])->name('register.step1');
+Route::post('/auth/register/verify-email', [AuthController::class, 'verifyEmailOtp'])->middleware('throttle:10,1')->name('register.verify-email');
+Route::post('/auth/register/verify-whatsapp', [AuthController::class, 'verifyWhatsAppOtp'])->middleware('throttle:10,1')->name('register.verify-whatsapp');
+Route::post('/auth/register/resend-email', [AuthController::class, 'resendEmailOtp'])->middleware('throttle:5,1')->name('register.resend-email');
+Route::post('/auth/register/resend-whatsapp', [AuthController::class, 'resendWhatsAppOtp'])->middleware('throttle:5,1')->name('register.resend-whatsapp');
+Route::post('/auth/register/step2', [AuthController::class, 'registerStep2'])->name('register.step2');
 
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -144,10 +172,8 @@ Route::middleware(['admin'])->group(function () {
     });
 
     Route::prefix('admin/payment')->name('admin.payment.')->group(function () {
-        Route::get('/history', function () { 
-            $deposits = \App\Models\HistoryDeposit::with('user')->orderBy('id', 'desc')->get();
-            return view('admin.payment.history.index', compact('deposits')); 
-        })->name('history');
+        Route::get('/history', [\App\Http\Controllers\Admin\PaymentHistoryController::class, 'index'])->name('history');
+        Route::post('/history/sync-all', [\App\Http\Controllers\Admin\PaymentHistoryController::class, 'syncAll'])->name('history.sync-all');
         Route::get('/settings', [PaymentGatewayController::class, 'settings'])->name('settings');
         Route::post('/settings', [PaymentGatewayController::class, 'update'])->name('settings.update');
     });
@@ -171,6 +197,11 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/whatsapp/status/{id}', [WhatsAppController::class, 'status'])->name('admin.whatsapp.status');
     Route::post('/admin/whatsapp/test', [WhatsAppController::class, 'testSend'])->name('admin.whatsapp.test');
     Route::post('/admin/whatsapp/logout', [WhatsAppController::class, 'logout'])->name('admin.whatsapp.logout');
+
+    Route::prefix('admin/brevo-api')->name('admin.brevo-api.')->group(function () {
+        Route::get('/', [BrevoApiController::class, 'index'])->name('index');
+        Route::post('/', [BrevoApiController::class, 'update'])->name('update');
+    });
 });
 
 // WhatsApp Webhook from Node.js server (no auth, no CSRF)

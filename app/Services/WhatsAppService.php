@@ -34,10 +34,18 @@ class WhatsAppService
      */
     public static function getAccountByType($type)
     {
-        return WhatsappAccount::where('type', $type)
+        $account = WhatsappAccount::where('type', $type)
             ->where('status', 'connected')
             ->inRandomOrder()
             ->first();
+
+        if (!$account && $type === 'Sender OTP') {
+            $account = WhatsappAccount::where('status', 'connected')
+                ->inRandomOrder()
+                ->first();
+        }
+
+        return $account;
     }
 
     /**

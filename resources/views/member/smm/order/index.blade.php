@@ -219,9 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCurlSnippet(serviceId = 'SERVICE_ID') {
         if (!curlCodeSnippet) return;
-        curlCodeSnippet.textContent = `<?php
-
-$curl = curl_init();
+        curlCodeSnippet.textContent = `$curl = curl_init();
 
 curl_setopt_array($curl, array(
   CURLOPT_URL => '${apiEndpoint}',
@@ -236,8 +234,8 @@ curl_setopt_array($curl, array(
     'action' => 'add',
     'key' => '${userApiKey}',
     'service' => '${serviceId}',
-    'link' => '$target_input_form',
-    'quantity' => '$jumlah_input_form'
+    'link' => 'https://example.com/link',
+    'quantity' => '100'
   ),
 ));
 

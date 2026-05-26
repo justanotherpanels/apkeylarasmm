@@ -86,6 +86,11 @@
                                     <td>
                                         <div class="d-flex gap-1 align-items-center">
                                             <a href="{{ route('member.smm.history.show', $order->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="Order Details"><i class="fa fa-eye"></i> Detail</a>
+                                            @if($order->status_order == 'Pending')
+                                                <a href="{{ route('member.payment.add') }}" class="btn btn-success btn-sm px-2 py-1" title="Pay"><i class="fa fa-credit-card"></i> Pay</a>
+                                            @else
+                                                <button class="btn btn-success btn-sm px-2 py-1" disabled title="Pay"><i class="fa fa-credit-card"></i> Pay</button>
+                                            @endif
                                             @if($order->api && $order->sid)
                                                 @if(in_array(strtolower($order->status_order), ['success', 'finish', 'completed', 'complete']))
                                                     <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status"><i class="fa fa-refresh"></i></button>
