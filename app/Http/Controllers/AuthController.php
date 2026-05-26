@@ -233,4 +233,97 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    /**
+     * Show forget password form
+     */
+    public function showForgetPassword()
+    {
+        return view('auth.forget');
+    }
+
+    /**
+     * Send forget password OTP
+     */
+    public function sendForgetPasswordOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string',
+        ]);
+
+        // Support email, username, or phone
+        $user = User::where('email', $request->email)
+            ->orWhere('username', $request->email)
+            ->orWhere('phone', ltrim($request->email, '0'))
+            ->first();
+
+        if ($user) {
+            $this->refreshOtp($user);
+
+            $message = "🔐 *SMM Panel Password Reset OTP*\n\n";
+            $message .= "Your password reset OTP code: *{$user->otp_code}*\n\n";
+            $message .= "Please use this code to reset your password. Do not share it with anyone.";
+
+            $fullPhone = $user->country_code . $user->phone;
+            \App\Services\WhatsAppService::sendOtp($fullPhone, $message);
+        }
+
+        return redirect()->route('password.reset', ['email' => $request->email])
+            ->with('status', 'If your account exists, a password reset verification code has been sent.');
+    }
+
+    /**
+     * Show reset password form
+     */
+    public function showResetPassword(Request $request)
+    {
+        $email = $request->query('email');
+        return view('auth.reset', compact('email'));
+    }
+
+    /**
+     * Reset password using OTP
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string',
+            'otp_code' => 'required|string|size:6',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Find user by email, username, or phone
+        $user = User::where('email', $request->email)
+            ->orWhere('username', $request->email)
+            ->orWhere('phone', ltrim($request->email, '0'))
+            ->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'Invalid account.']);
+        }
+
+        if ($user->otp_expires_at && $user->otp_expires_at->isPast()) {
+            return back()->withErrors(['otp_code' => 'Reset OTP code expired.']);
+        }
+
+        if (($user->otp_attempts ?? 0) >= self::OTP_MAX_ATTEMPTS) {
+            return back()->withErrors(['otp_code' => 'Too many OTP attempts. Please request a new reset code.']);
+        }
+
+        if ($user->otp_code !== $request->otp_code) {
+            $user->otp_attempts = ($user->otp_attempts ?? 0) + 1;
+            $user->save();
+            return back()->withErrors(['otp_code' => 'Invalid reset OTP code.']);
+        }
+
+        // Reset password
+        $user->password = Hash::make($request->password);
+        $user->otp_code = null;
+        $user->otp_expires_at = null;
+        $user->otp_attempts = 0;
+        $user->otp_last_sent_at = null;
+        $user->save();
+
+        return redirect()->route('login')->with('success', 'Your password has been successfully reset. Please login with your new password.');
+    }
 }

@@ -193,7 +193,6 @@
                       </svg><span>SMM Service</span></a>
                     <ul class="sidebar-submenu">
                       <li><a href="{{ route('admin.smm.order') }}">Order</a></li>
-                      <li><a href="{{ route('admin.smm.platform') }}">Platform</a></li>
                       <li><a href="{{ route('admin.smm.category') }}">Category</a></li>
                       <li><a href="{{ route('admin.smm.service') }}">Service</a></li>
                       <li><a href="{{ route('admin.smm.api') }}">API</a></li>

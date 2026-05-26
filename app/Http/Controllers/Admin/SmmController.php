@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OrderSmm;
 use App\Models\ApiSmm;
-use App\Models\Platform;
 use App\Models\CategorySmm;
 use App\Models\ServiceSmm;
 use Illuminate\Http\Request;
@@ -154,87 +153,6 @@ class SmmController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.smm.api')->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Display a listing of SMM Platforms.
-     */
-    public function platformIndex()
-    {
-        $platforms = Platform::with('category')->orderBy('id', 'desc')->get();
-        return view('admin.smm.platform.index', compact('platforms'));
-    }
-
-    /**
-     * Show the form for creating a new SMM Platform.
-     */
-    public function platformCreate()
-    {
-        $categories = CategorySmm::orderBy('name', 'asc')->get();
-        return view('admin.smm.platform.create', compact('categories'));
-    }
-
-    /**
-     * Store a newly created SMM Platform in storage.
-     */
-    public function platformStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'icon_imagekit_url' => 'nullable|url|max:255',
-            'id_category_smm' => 'nullable|exists:category_smm,id',
-        ]);
-
-        Platform::create([
-            'name' => $request->name,
-            'icon_imagekit_url' => $request->icon_imagekit_url,
-            'id_category_smm' => $request->id_category_smm,
-        ]);
-
-        return redirect()->route('admin.smm.platform')->with('success', 'Platform berhasil ditambahkan!');
-    }
-
-    /**
-     * Show the form for editing the specified SMM Platform.
-     */
-    public function platformEdit($id)
-    {
-        $platform = Platform::findOrFail($id);
-        $categories = CategorySmm::orderBy('name', 'asc')->get();
-        return view('admin.smm.platform.edit', compact('platform', 'categories'));
-    }
-
-    /**
-     * Update the specified SMM Platform in storage.
-     */
-    public function platformUpdate(Request $request, $id)
-    {
-        $platform = Platform::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'icon_imagekit_url' => 'nullable|url|max:255',
-            'id_category_smm' => 'nullable|exists:category_smm,id',
-        ]);
-
-        $platform->update([
-            'name' => $request->name,
-            'icon_imagekit_url' => $request->icon_imagekit_url,
-            'id_category_smm' => $request->id_category_smm,
-        ]);
-
-        return redirect()->route('admin.smm.platform')->with('success', 'Platform berhasil diperbarui!');
-    }
-
-    /**
-     * Remove the specified SMM Platform from storage.
-     */
-    public function platformDestroy($id)
-    {
-        $platform = Platform::findOrFail($id);
-        $platform->delete();
-
-        return redirect()->route('admin.smm.platform')->with('success', 'Platform berhasil dihapus!');
     }
 
     /**

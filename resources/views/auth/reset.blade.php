@@ -1,8 +1,12 @@
 @php
-  $setting = \App\Models\Setting::first();
+    try {
+        $setting = \App\Models\Setting::first();
+    } catch (\Throwable $e) {
+        $setting = null;
+    }
 @endphp
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,7 +16,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
-    <title>OTP Verification - {{ $setting && $setting->site_name ? $setting->site_name : config('app.name') }}</title>
+    <title>Reset Password - {{ $setting && $setting->site_name ? $setting->site_name : config('app.name') }}</title>
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
@@ -37,9 +41,17 @@
     <link id="color" rel="stylesheet" href="{{ asset('themes/css/color-1.css') }}" media="screen">
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/responsive.css') }}">
-    @if($setting && $setting->head_code)
-        {!! $setting->head_code !!}
-    @endif
+    
+    <!-- PostHog -->
+    <script>
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('{{ env("POSTHOG_API_KEY", "<ph_project_api_key>") }}', {
+            api_host: '{{ env("POSTHOG_HOST", "https://us.i.posthog.com") }}',
+            person_profiles: 'identified_only'
+        });
+    </script>
+    <!-- End PostHog -->
+    {!! $setting->head_code ?? '' !!}
     <style>
       .otp-input {
         width: 50px;
@@ -61,13 +73,9 @@
         justify-content: center;
         margin: 20px 0;
       }
-      .phone-masked {
-        font-weight: 600;
-        color: #7366ff;
-      }
     </style>
   </head>
-  <body>     
+  <body>
     <!-- Loader starts-->
     <div class="loader-wrapper">
       <div class="theme-loader">    
@@ -83,28 +91,17 @@
             <div class="login-card">
               <div class="card">
                 <div class="card-header pb-0">
-                  <h4>OTP Verification</h4>
-                  <span>Enter the 6-digit code sent to WhatsApp</span>
+                  <h4>Reset Password</h4>
+                  <span>Enter the OTP code and your new password.</span>
                 </div>
                 <div class="card-body">
-                  <form class="theme-form login-form" method="POST" action="{{ route('otp.verify') }}">
+                  <form class="theme-form login-form" method="POST" action="{{ route('password.update') }}">
                     @csrf
-                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                    <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
                     
-                    <div class="text-center my-3">
-                      <p class="text-muted mb-1">Code sent to number:</p>
-                      <p class="phone-masked">+{{ substr($user->phone, 0, 4) }}****{{ substr($user->phone, -4) }}</p>
-                    </div>
-
-                    @if (session('success'))
+                    @if (session('status'))
                       <div class="alert alert-success mb-4">
-                        {{ session('success') }}
-                      </div>
-                    @endif
-
-                    @if (session('info'))
-                      <div class="alert alert-info mb-4">
-                        {{ session('info') }}
+                          {{ session('status') }}
                       </div>
                     @endif
 
@@ -119,6 +116,14 @@
                     @endif
 
                     <div class="form-group">
+                      <label>Email/Username/Phone</label>
+                      <div class="input-group"><span class="input-group-text"><i class="icon-email"></i></span>
+                        <input class="form-control" type="text" name="email" value="{{ $email ?? old('email') }}" required="" placeholder="Email, Username, or Phone" autofocus>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>OTP Code</label>
                       <div class="otp-wrapper">
                         <input type="text" class="otp-input" maxlength="1" data-index="0" autofocus>
                         <input type="text" class="otp-input" maxlength="1" data-index="1">
@@ -129,22 +134,38 @@
                       </div>
                       <input type="hidden" name="otp_code" id="otp_code">
                     </div>
+
+                    <div class="form-group">
+                      <label>New Password</label>
+                      <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
+                        <input class="form-control" type="password" name="password" required="" placeholder="New Password">
+                        <div class="show-hide"><span class="show">                         </span></div>
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>Confirm New Password</label>
+                      <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
+                        <input class="form-control" type="password" name="password_confirmation" required="" placeholder="Confirm New Password">
+                        <div class="show-hide"><span class="show">                         </span></div>
+                      </div>
+                    </div>
                   </form>
                 </div>
                 <div class="card-footer text-center">
-                  <form class="theme-form" method="POST" action="{{ route('otp.verify') }}">
+                  <form class="theme-form" method="POST" action="{{ route('password.update') }}">
                     @csrf
-                    <input type="hidden" name="user_id" value="{{ $user->id }}">
+                    <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
                     <input type="hidden" name="otp_code" id="otp_code_footer">
-                    <button class="btn btn-primary" type="submit">Verify</button>
+                    <button class="btn btn-primary" type="submit">Reset Password</button>
                     <a class="btn btn-secondary" href="{{ route('login') }}">Back to Login</a>
                   </form>
                   
                   <div class="mt-3">
                     <p class="text-muted mb-2">Didn't receive the code?</p>
-                    <form method="POST" action="{{ route('otp.resend') }}">
+                    <form method="POST" action="{{ route('password.email') }}">
                       @csrf
-                      <input type="hidden" name="user_id" value="{{ $user->id }}">
+                      <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
                       <button type="submit" class="btn btn-link p-0">Resend OTP</button>
                     </form>
                   </div>
@@ -229,8 +250,6 @@
         }
       });
     </script>
-    @if($setting && $setting->footer_code)
-        {!! $setting->footer_code !!}
-    @endif
+    {!! $setting->footer_code ?? '' !!}
   </body>
 </html>

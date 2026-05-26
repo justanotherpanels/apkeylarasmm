@@ -23,6 +23,12 @@ Route::post('/auth/register', [AuthController::class, 'register'])->name('regist
 
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Forgot Password
+Route::get('/auth/forgot-password', [AuthController::class, 'showForgetPassword'])->name('password.request');
+Route::post('/auth/forgot-password', [AuthController::class, 'sendForgetPasswordOtp'])->middleware('throttle:5,1')->name('password.email');
+Route::get('/auth/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:10,1')->name('password.update');
+
 Route::get('/auth/otp', [AuthController::class, 'showOtp'])->name('otp.show');
 Route::post('/auth/otp/verify', [AuthController::class, 'verifyOtp'])->middleware('throttle:10,1')->name('otp.verify');
 Route::post('/auth/otp/resend', [AuthController::class, 'resendOtp'])->middleware('throttle:5,1')->name('otp.resend');
@@ -105,14 +111,6 @@ Route::middleware(['admin'])->group(function () {
     Route::prefix('admin/smm')->name('admin.smm.')->group(function () {
         Route::get('/order', [SmmController::class, 'orders'])->name('order');
         Route::post('/order/{id}/sync', [SmmController::class, 'orderSync'])->name('order.sync');
-        // Platform CRUD Routes
-        Route::get('/platform', [SmmController::class, 'platformIndex'])->name('platform');
-        Route::get('/platform/create', [SmmController::class, 'platformCreate'])->name('platform.create');
-        Route::post('/platform', [SmmController::class, 'platformStore'])->name('platform.store');
-        Route::get('/platform/{id}/edit', [SmmController::class, 'platformEdit'])->name('platform.edit');
-        Route::put('/platform/{id}', [SmmController::class, 'platformUpdate'])->name('platform.update');
-        Route::delete('/platform/{id}', [SmmController::class, 'platformDestroy'])->name('platform.destroy');
-
         // Category CRUD Routes
         Route::get('/category', [SmmController::class, 'categoryIndex'])->name('category');
         Route::get('/category/create', [SmmController::class, 'categoryCreate'])->name('category.create');
