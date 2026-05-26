@@ -1,5 +1,8 @@
+@php
+  $setting = \App\Models\Setting::first();
+@endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,33 +10,35 @@
     <meta name="description" content="viho admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, viho admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
-    <link rel="icon" href="{{ asset('themes/images/favicon.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('themes/images/favicon.png') }}" type="image/x-icon">
-    <title>Verifikasi OTP - SMM Panel</title>
+    <link rel="icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('assets/images/logo/favicon-icon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('assets/images/logo/favicon-icon.png') }}" type="image/x-icon">
+    <title>Verifikasi OTP - {{ $setting && $setting->site_name ? $setting->site_name : config('app.name') }}</title>
     <!-- Google font-->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
-    <!-- Font Awesome-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/fontawesome.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/font-awesome.css') }}">
     <!-- ico-font-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/icofont.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
     <!-- Themify icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/themify.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
     <!-- Flag icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/flag-icon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
     <!-- Feather icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/feather-icon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
     <!-- Plugins css start-->
     <!-- Plugins css Ends-->
     <!-- Bootstrap css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/bootstrap.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
     <!-- App css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('themes/css/color-1.css') }}" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
     <!-- Responsive css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/responsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+    @if($setting && $setting->head_code)
+        {!! $setting->head_code !!}
+    @endif
     <style>
       .otp-input {
         width: 50px;
@@ -61,7 +66,7 @@
       }
     </style>
   </head>
-  <body>
+  <body>     
     <!-- Loader starts-->
     <div class="loader-wrapper">
       <div class="theme-loader">    
@@ -143,20 +148,18 @@
     </section>
     <!-- page-wrapper end-->
     <!-- latest jquery-->
-    <script src="{{ asset('themes/js/jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery-3.5.1.min.js') }}"></script>
     <!-- feather icon js-->
-    <script src="{{ asset('themes/js/icons/feather-icon/feather.min.js') }}"></script>
-    <script src="{{ asset('themes/js/icons/feather-icon/feather-icon.js') }}"></script>
+    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
     <!-- Sidebar jquery-->
-    <script src="{{ asset('themes/js/sidebar-menu.js') }}"></script>
-    <script src="{{ asset('themes/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/config.js') }}"></script>
     <!-- Bootstrap js-->
-    <script src="{{ asset('themes/js/bootstrap/popper.min.js') }}"></script>
-    <script src="{{ asset('themes/js/bootstrap/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
     <!-- Plugins JS start-->
     <!-- Plugins JS Ends-->
     <!-- Theme js-->
-    <script src="{{ asset('themes/js/script.js') }}"></script>
+    <script src="{{ asset('assets/js/script.js') }}"></script>
     <!-- OTP Input Script -->
     <script>
       $(document).ready(function() {
@@ -214,5 +217,8 @@
         }
       });
     </script>
+    @if($setting && $setting->footer_code)
+        {!! $setting->footer_code !!}
+    @endif
   </body>
 </html>
