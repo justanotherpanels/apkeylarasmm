@@ -362,11 +362,13 @@ class WhatsAppBotService
         $sign = md5(base64_encode(json_encode($postData, JSON_UNESCAPED_UNICODE)) . $gateway->api_config['payment_key']);
         
         try {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
-                'merchant' => $gateway->api_config['merchant_id'],
-                'sign' => $sign,
-                'Content-Type' => 'application/json'
-            ])->post('https://api.cryptomus.com/v1/payment', $postData);
+            $response = \Illuminate\Support\Facades\Http::external()
+                ->withHeaders([
+                    'merchant' => $gateway->api_config['merchant_id'],
+                    'sign' => $sign,
+                    'Content-Type' => 'application/json'
+                ])
+                ->post('https://api.cryptomus.com/v1/payment', $postData);
 
             $resData = $response->json();
 
