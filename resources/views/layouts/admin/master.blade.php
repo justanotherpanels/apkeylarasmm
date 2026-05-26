@@ -274,7 +274,16 @@
         </div>
         <!-- Page Sidebar Ends-->
         
-
+        @if(isset($hasAdminUpdate) && $hasAdminUpdate)
+            <div class="alert alert-warning m-3 text-center">
+                <i data-feather="refresh-cw" class="me-2"></i>
+                Update baru tersedia dari GitHub!
+                <a href="{{ route('admin.system-update.index') }}" class="btn btn-sm btn-primary ms-2">
+                    <i data-feather="download" class="me-1"></i> Update Sekarang
+                </a>
+            </div>
+        @endif
+        
         @yield('content')
 
 

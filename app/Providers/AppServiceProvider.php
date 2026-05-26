@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
                 'verify' => (bool) $verifySsl,
             ]);
         });
+
+        View::composer(
+            'layouts.admin.*',
+            \App\Http\ViewComposers\AdminUpdateAlertComposer::class
+        );
     }
 }

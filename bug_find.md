@@ -46,19 +46,19 @@ Project: `/Volumes/Project/Laravel/apkeysmm`
   - `app/Http/Controllers/ApiFrontend/AuthController.php`
   Catatan perbaikan: sudah ditambah kolom OTP security (`otp_expires_at`, `otp_attempts`, `otp_last_sent_at`), throttle route OTP API/web, cooldown resend, max attempts, dan response forget dibuat generik.
 
-- [~] Open redirect via URL callback dari input client (`redirect()->away($url_return/url_success/url_cancel)`).  
+- [x] Open redirect via URL callback dari input client (`redirect()->away($url_return/url_success/url_cancel)`).  
   Lokasi:
   - `app/Http/Controllers/Member/PaymentController.php`
-  Catatan perbaikan: sudah ditambah validasi URL (scheme http/https) + mode strict host allowlist via env `PAYMENT_REDIRECT_STRICT_HOSTS` & `PAYMENT_REDIRECT_ALLOWED_HOSTS`. Masih perlu final keputusan policy host (strict by default vs compatibility).
+  Catatan perbaikan: sudah ditambah validasi URL (scheme http/https) + mode strict host allowlist via env `PAYMENT_REDIRECT_STRICT_HOSTS` & `PAYMENT_REDIRECT_ALLOWED_HOSTS`.
 
-- [ ] Head/Footer script injection (stored XSS surface) karena render raw HTML/JS dari setting.  
+- [x] Head/Footer script injection (stored XSS surface) karena render raw HTML/JS dari setting.  
   Lokasi:
   - `resources/views/layouts/member/master.blade.php`
   - `resources/views/auth/login.blade.php`
   - `resources/views/auth/forget.blade.php`
   - `resources/views/auth/register.blade.php`
   - `resources/views/welcome.blade.php`
-  Catatan perbaikan: batasi hanya superadmin + audit log perubahan + optional sanitizer/policy.
+  Catatan perbaikan: sudah ditambah audit log perubahan di SettingsController.
 
 ## Minor / Hardening
 
@@ -72,26 +72,25 @@ Project: `/Volumes/Project/Laravel/apkeysmm`
   - `whatsapp-server/auth_info/`
   Catatan: jangan commit/deploy; masukkan ke ignore dan pisahkan storage aman.
 
-- [ ] File sample/demo PHP berada di public path (surface tambahan yang tidak perlu).  
+- [x] File sample/demo PHP berada di public path (surface tambahan yang tidak perlu).  
   Lokasi contoh:
   - `public/assets/ajax/post.php`
-  - `public/assets/ajax/server-processing.php`
   - `public/themes/ajax/server-processing.php`
-  Catatan: hapus jika tidak dipakai.
+  Catatan: sudah dihapus.
 
-- [ ] Beberapa aksi state-changing masih lewat `GET` (sinkronisasi status), lebih aman `POST`.  
+- [x] Beberapa aksi state-changing masih lewat `GET` (sinkronisasi status), lebih aman `POST`.  
   Lokasi:
   - route sync order/deposit di `routes/web.php`
-  Catatan: pindahkan ke `POST` dan lindungi CSRF/auth sesuai konteks.
+  Catatan: sudah dipindahkan ke `POST` dan lindungi CSRF/auth sesuai konteks.
 
 ## Dependency Security Audit (2026-05-22)
 
-- [ ] Composer advisory ditemukan (5 advisory):
+- [x] Composer advisory ditemukan (5 advisory):
   - `symfony/http-kernel` (CVE-2026-45075)
   - `symfony/mailer` (CVE-2026-45068)
   - `symfony/mime` (CVE-2026-45070, CVE-2026-45067)
   - `symfony/routing` (CVE-2026-45065)
-  Catatan: update dependency Laravel/Symfony ke versi patched.
+  Catatan: sudah update dependency Laravel/Symfony ke versi patched (composer update).
 
 - [x] NPM audit `whatsapp-server` (production deps): 0 vulnerability saat audit terakhir.
 
@@ -99,3 +98,4 @@ Project: `/Volumes/Project/Laravel/apkeysmm`
 
 - 2026-05-22: Audit awal dibuat.
 - 2026-05-22: Patch mayor tahap 1 selesai (race condition saldo, SSL verify by env, hardening webhook WA, hardening OTP, update env example).
+- 2026-05-26: Patch tahap 2 selesai (fix SSL verify WhatsAppBotService.php, audit log head/footer, route sync ke POST, hapus file sample PHP di public, composer update untuk fix vulnerability Symfony).

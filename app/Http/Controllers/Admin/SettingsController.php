@@ -33,6 +33,9 @@ class SettingsController extends Controller
             $setting = new Setting();
         }
 
+        $oldHeadCode = $setting->head_code;
+        $oldFooterCode = $setting->footer_code;
+
         $setting->fill($request->only([
             'site_name',
             'email',
@@ -94,6 +97,16 @@ class SettingsController extends Controller
         }
 
         $setting->save();
+
+        if ($oldHeadCode !== $setting->head_code || $oldFooterCode !== $setting->footer_code) {
+            \Illuminate\Support\Facades\Log::info('Setting head/footer code changed by admin', [
+                'admin_id' => auth()->id(),
+                'old_head_code' => $oldHeadCode,
+                'new_head_code' => $setting->head_code,
+                'old_footer_code' => $oldFooterCode,
+                'new_footer_code' => $setting->footer_code,
+            ]);
+        }
 
         return redirect()->route('admin.settings.index')->with('success', 'Pengaturan berhasil disimpan!');
     }

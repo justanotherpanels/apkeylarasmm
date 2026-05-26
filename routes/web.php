@@ -33,7 +33,7 @@ Route::middleware(['auth'])->prefix('member')->name('member.')->group(function (
     Route::get('/smm/order', [App\Http\Controllers\Member\SmmController::class, 'orderForm'])->name('smm.order');
     Route::post('/smm/order', [App\Http\Controllers\Member\SmmController::class, 'storeOrder'])->name('smm.order.store');
     Route::get('/smm/get-services/{categoryId}', [App\Http\Controllers\Member\SmmController::class, 'getServices'])->name('smm.get_services');
-    Route::get('/smm/order/{id}/sync', [App\Http\Controllers\Member\SmmController::class, 'orderSync'])->name('smm.order.sync');
+    Route::post('/smm/order/{id}/sync', [App\Http\Controllers\Member\SmmController::class, 'orderSync'])->name('smm.order.sync');
 
     // History Order
     Route::get('/smm/history', [App\Http\Controllers\Member\SmmController::class, 'historyIndex'])->name('smm.history');
@@ -44,7 +44,7 @@ Route::middleware(['auth'])->prefix('member')->name('member.')->group(function (
     Route::post('/payment/add', [App\Http\Controllers\Member\PaymentController::class, 'store'])->name('payment.store');
     Route::get('/payment/history', [App\Http\Controllers\Member\PaymentController::class, 'history'])->name('payment.history');
     Route::get('/payment/history/{invoice}', [App\Http\Controllers\Member\PaymentController::class, 'showDeposit'])->name('payment.history.show');
-    Route::get('/payment/history/{invoice}/sync', [App\Http\Controllers\Member\PaymentController::class, 'syncDeposit'])->name('payment.history.sync');
+    Route::post('/payment/history/{invoice}/sync', [App\Http\Controllers\Member\PaymentController::class, 'syncDeposit'])->name('payment.history.sync');
     Route::get('/payment/paypal/callback', [App\Http\Controllers\Member\PaymentController::class, 'paypalCallback'])->name('payment.paypal.callback');
 
     // Refill Order
@@ -104,7 +104,7 @@ Route::middleware(['admin'])->group(function () {
 
     Route::prefix('admin/smm')->name('admin.smm.')->group(function () {
         Route::get('/order', [SmmController::class, 'orders'])->name('order');
-        Route::get('/order/{id}/sync', [SmmController::class, 'orderSync'])->name('order.sync');
+        Route::post('/order/{id}/sync', [SmmController::class, 'orderSync'])->name('order.sync');
         // Platform CRUD Routes
         Route::get('/platform', [SmmController::class, 'platformIndex'])->name('platform');
         Route::get('/platform/create', [SmmController::class, 'platformCreate'])->name('platform.create');
@@ -136,7 +136,7 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/api/create', [SmmController::class, 'apiCreate'])->name('api.create');
         Route::post('/api', [SmmController::class, 'apiStore'])->name('api.store');
         Route::get('/api/{id}/edit', [SmmController::class, 'apiEdit'])->name('api.edit');
-        Route::get('/api/{id}/sync', [SmmController::class, 'apiSyncBalance'])->name('api.sync');
+        Route::post('/api/{id}/sync', [SmmController::class, 'apiSyncBalance'])->name('api.sync');
         Route::put('/api/{id}', [SmmController::class, 'apiUpdate'])->name('api.update');
         Route::delete('/api/{id}', [SmmController::class, 'apiDestroy'])->name('api.destroy');
 
