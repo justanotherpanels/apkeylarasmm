@@ -160,7 +160,8 @@
                   </li>
                  
 
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.index') }}">
+                  <li class="sidebar-list {{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                   <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g> 
                           <g> 
@@ -169,7 +170,7 @@
                           </g>
                         </g>
                       </svg><span>Dashboard</span></a></li>
-                  <li class="sidebar-list">  
+                  <li class="sidebar-list {{ request()->routeIs('admin.user.*') ? 'active' : '' }}">  
                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.user.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g> 
@@ -182,7 +183,8 @@
                         </g>
                       </svg><span>User</span></a>
                   </li>
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="#">
+                  <li class="sidebar-list {{ request()->routeIs('admin.smm.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('admin.smm.*') ? 'active' : '' }}" href="#">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g> 
                           <g> 
@@ -191,18 +193,28 @@
                           </g>
                         </g>
                       </svg><span>SMM Service</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{{ route('admin.smm.order') }}">Order</a></li>
-                      <li><a href="{{ route('admin.smm.category') }}">Category</a></li>
-                      <li><a href="{{ route('admin.smm.service') }}">Service</a></li>
-                      <li><a href="{{ route('admin.smm.api') }}">API</a></li>
-                      <li><a href="{{ route('admin.smm.import') }}">Import</a></li>
+                    <ul class="sidebar-submenu {{ request()->routeIs('admin.smm.*') ? 'd-block' : '' }}">
+                      <li class="{{ request()->routeIs('admin.smm.order') ? 'active' : '' }}">
+                        <a href="{{ route('admin.smm.order') }}">Order</a>
+                      </li>
+                      <li class="{{ request()->routeIs('admin.smm.category*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.smm.category') }}">Category</a>
+                      </li>
+                      <li class="{{ request()->routeIs('admin.smm.service*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.smm.service') }}">Service</a>
+                      </li>
+                      <li class="{{ request()->routeIs('admin.smm.api*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.smm.api') }}">API</a>
+                      </li>
+                      <li class="{{ request()->routeIs('admin.smm.import') ? 'active' : '' }}">
+                        <a href="{{ route('admin.smm.import') }}">Import</a>
                       </li>
                     </ul>
                   </li>
                  
                   
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title" href="#">
+                  <li class="sidebar-list {{ request()->routeIs('admin.payment.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('admin.payment.*') ? 'active' : '' }}" href="#">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g> 
                           <g> 
@@ -211,13 +223,18 @@
                           </g>
                         </g>
                       </svg><span>Payment</span></a>
-                    <ul class="sidebar-submenu">
-                      <li><a href="{{ route('admin.payment.history') }}">History</a></li>
-                      <li><a href="{{ route('admin.payment.settings') }}">Payment Gateway</a></li>
-                      </ul>
+                    <ul class="sidebar-submenu {{ request()->routeIs('admin.payment.*') ? 'd-block' : '' }}">
+                      <li class="{{ request()->routeIs('admin.payment.history') ? 'active' : '' }}">
+                        <a href="{{ route('admin.payment.history') }}">History</a>
+                      </li>
+                      <li class="{{ request()->routeIs('admin.payment.settings') ? 'active' : '' }}">
+                        <a href="{{ route('admin.payment.settings') }}">Payment Gateway</a>
+                      </li>
+                    </ul>
                   </li>
                   
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.ticket.index') }}">
+                  <li class="sidebar-list {{ request()->routeIs('admin.ticket.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.ticket.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g> 
                           <g>
@@ -227,14 +244,16 @@
                         </g>
                       </svg><span>Support Ticket</span></a></li>
 
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.whatsapp.index') }}">
+                  <li class="sidebar-list {{ request()->routeIs('admin.whatsapp.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.whatsapp.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g>
                           <path d="M12 2C6.477 2 2 6.477 2 12c0 1.764.457 3.42 1.258 4.88L2 22l5.242-1.218C8.618 21.554 10.264 22 12 22c5.523 22 10-4.477 10-10S17.523 2 12 2zm5.087 14.536c-.214.604-1.246 1.156-1.748 1.206-.45.044-.997.228-3.155-.668-2.607-1.082-4.269-3.72-4.397-3.89-.128-.17-1.047-1.393-1.047-2.656 0-1.263.655-1.884.89-2.14.234-.256.51-.32.68-.32.17 0 .34.004.488.012.16.01.378-.063.593.456.223.543.723 1.764.787 1.892.064.128.106.277.021.447-.085.17-.128.277-.255.426-.128.149-.27.32-.383.447-.128.138-.266.29-.117.543.15.255.666 1.1 1.432 1.782.986.877 1.815 1.147 2.07 1.275.255.128.404.106.553-.064.15-.17.638-.745.81-1.002.17-.255.34-.213.574-.128.234.085 1.488.702 1.744.83.255.128.425.192.488.298.064.106.064.617-.15 1.221z" fill="#130F26" stroke="none"></path>
                         </g>
                       </svg><span>WhatsApp</span></a></li>
 
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.settings.index') }}">
+                  <li class="sidebar-list {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.settings.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g>
                           <g>
@@ -244,7 +263,8 @@
                         </g>
                       </svg><span>Setting</span></a></li>
 
-                  <li class="sidebar-list"><a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.system-update.index') }}">
+                  <li class="sidebar-list {{ request()->routeIs('admin.system-update.*') ? 'active' : '' }}">
+                    <a class="sidebar-link sidebar-title link-nav" href="{{ route('admin.system-update.index') }}">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 3V7" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                         <path d="M12 17V21" stroke="#130F26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
