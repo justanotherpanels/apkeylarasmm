@@ -128,7 +128,10 @@
                                         <td>
                                             <div class="d-flex gap-1">
                                                 @if($order->api && $order->sid)
-                                                    <a href="{{ route('admin.smm.order.sync', $order->id) }}" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></a>
+                                                    <form method="POST" action="{{ route('admin.smm.order.sync', $order->id) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></button>
+                                                    </form>
                                                 @endif
                                                 <button class="btn btn-warning btn-sm px-2 py-1" title="Edit Detail" data-bs-toggle="modal" data-bs-target="#editModal{{ $order->id }}"><i class="fa fa-pencil"></i></button>
                                                 <form action="#" method="POST" onsubmit="return confirm('Yakin ingin menghapus order ini?');" style="display:inline;">

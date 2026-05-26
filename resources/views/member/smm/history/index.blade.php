@@ -90,7 +90,10 @@
                                                 @if(in_array(strtolower($order->status_order), ['success', 'finish', 'completed', 'complete']))
                                                     <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status"><i class="fa fa-refresh"></i></button>
                                                 @else
-                                                    <a href="{{ route('member.smm.order.sync', $order->id) }}" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></a>
+                                                    <form method="POST" action="{{ route('member.smm.order.sync', $order->id) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></button>
+                                                    </form>
                                                 @endif
                                             @endif
                                         </div>

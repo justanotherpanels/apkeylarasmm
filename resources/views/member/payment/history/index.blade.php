@@ -78,7 +78,10 @@
                                             <div class="d-flex gap-1 align-items-center">
                                                 <a href="{{ route('member.payment.history.show', $deposit->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="View Details"><i class="fa fa-eye"></i> Detail</a>
                                                 @if($deposit->status_payment === 'Pending')
-                                                    <a href="{{ route('member.payment.history.sync', $deposit->invoice) }}" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></a>
+                                                    <form method="POST" action="{{ route('member.payment.history.sync', $deposit->invoice) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></button>
+                                                    </form>
                                                 @else
                                                     <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status"><i class="fa fa-refresh"></i></button>
                                                 @endif

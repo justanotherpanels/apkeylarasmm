@@ -144,7 +144,10 @@ Route::middleware(['admin'])->group(function () {
     });
 
     Route::prefix('admin/payment')->name('admin.payment.')->group(function () {
-        Route::get('/history', function () { return view('admin.payment.history.index'); })->name('history');
+        Route::get('/history', function () { 
+            $deposits = \App\Models\HistoryDeposit::with('user')->orderBy('id', 'desc')->get();
+            return view('admin.payment.history.index', compact('deposits')); 
+        })->name('history');
         Route::get('/settings', [PaymentGatewayController::class, 'settings'])->name('settings');
         Route::post('/settings', [PaymentGatewayController::class, 'update'])->name('settings.update');
     });

@@ -12,8 +12,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Best SMM Panel India | Bu Instagram Follower & Likes</title>
-    <meta name="description" content="Register an account on the Best SMM Panel India | Bu Instagram Follower & Likes. Grow your social media platforms with fast, cheap, and premium SMM services.">
+    <title>Best SMM Panel India | Buy Instagram Follower & Likes</title>
+    <meta name="description" content="Register an account on the Best SMM Panel India | Buy Instagram Follower & Likes. Grow your social media platforms with fast, cheap, and premium SMM services.">
     <meta name="keywords" content="smm panel, smm panel india, cheap instagram followers, buy instagram likes, buy followers, social media marketing">
     <meta name="author" content="{{ $siteName }}">
     <meta name="robots" content="index, follow">
@@ -232,7 +232,7 @@
                           <option value="260" {{ old('country_code') == '260' ? 'selected' : '' }}>+260 Zambia</option>
                           <option value="263" {{ old('country_code') == '263' ? 'selected' : '' }}>+263 Zimbabwe</option>
                     </select>
-                    <input class="form-control" type="text" name="phone" required="" placeholder="81234567890" value="{{ old('phone') }}">
+                    <input class="form-control" type="text" name="phone" required="" placeholder="81234567890" value="{{ old('phone') }}" pattern="[0-9]*" inputmode="numeric" id="phone_input">
                   </div>
                 </div>
                 <div class="form-group">
@@ -275,6 +275,35 @@
     <!-- Theme js-->
     <script src="{{ asset('themes/js/script.js') }}"></script>
     <!-- login js-->
+    <!-- Phone number validation - only numbers allowed -->
+    <script>
+      $(document).ready(function() {
+        const phoneInput = $('#phone_input');
+        
+        phoneInput.on('input', function() {
+          // Remove any non-digit characters
+          let value = $(this).val().replace(/[^0-9]/g, '');
+          $(this).val(value);
+        });
+        
+        // Prevent pasting non-digit characters
+        phoneInput.on('paste', function(e) {
+          e.preventDefault();
+          const pastedText = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+          const digitsOnly = pastedText.replace(/[^0-9]/g, '');
+          $(this).val(digitsOnly);
+        });
+        
+        // Prevent non-digit key presses
+        phoneInput.on('keypress', function(e) {
+          const charCode = e.which ? e.which : e.keyCode;
+          if (charCode < 48 || charCode > 57) {
+            e.preventDefault();
+            return false;
+          }
+        });
+      });
+    </script>
     <!-- Plugin used-->
     {!! $setting->footer_code ?? '' !!}
   </body>
