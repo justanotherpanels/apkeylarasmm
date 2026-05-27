@@ -1,107 +1,101 @@
 @extends('layouts.member.master')
 
 @section('content')
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>Ticket #TCK-{{ $ticket->id }}</h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('member.tickets.index') }}">Tickets</a></li>
-                    <li class="breadcrumb-item active">Ticket #TCK-{{ $ticket->id }}</li>
-                </ol>
-            </div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Ticket #TCK-{{ $ticket->id }}</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('member.tickets.index') }}">Tickets</a></li>
+        <li class="breadcrumb-item active">Ticket #TCK-{{ $ticket->id }}</li>
+    </ol>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </div>
-</div>
-<!-- Container-fluid starts-->
-<div class="container-fluid">
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-sm-12">
-            @if(session('success'))
-                <div class="alert alert-success dark alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-            @if($errors->any())
-                <div class="alert alert-danger dark alert-dismissible fade show" role="alert">
-                    <ul class="mb-0">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
-            <div class="card">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <h5>{{ $ticket->subject }}</h5>
-                        <span>Ticket Status</span>
+                        <i class="fas fa-envelope-open-text me-1"></i> <strong class="text-dark">{{ $ticket->subject }}</strong>
                     </div>
                     <div>
                         @if($ticket->status == 'Pending')
-                            <span class="badge badge-warning">Pending</span>
+                            <span class="badge bg-warning text-dark">Pending</span>
                         @elseif($ticket->status == 'Reply')
-                            <span class="badge badge-info">Reply</span>
+                            <span class="badge bg-info text-dark">Reply</span>
                         @elseif($ticket->status == 'Response')
-                            <span class="badge badge-success">Response</span>
+                            <span class="badge bg-success">Response</span>
                         @elseif($ticket->status == 'Closed')
-                            <span class="badge badge-secondary">Closed</span>
+                            <span class="badge bg-secondary">Closed</span>
                         @endif
                     </div>
                 </div>
                 
-                <div class="card-body">
-                    <div class="chat-box">
-                        <div class="chat-history chat-right w-100">
-                            <ul class="m-b-20">
-                                @foreach($ticket->content as $message)
-                                    @if(isset($message['sender']) && $message['sender'] == 'admin')
-                                        <li class="clearfix">
-                                            <div class="message-data text-end"><span class="message-data-time">{{ $message['created_at'] }}</span></div>
-                                            <div class="message other-message pull-right bg-light-primary text-dark border-primary">
-                                                <strong>Support Admin</strong><br>
-                                                {!! nl2br(e($message['message'])) !!}
-                                            </div>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <div class="message-data"><span class="message-data-time">{{ $message['created_at'] }}</span></div>
-                                            <div class="message my-message">
-                                                <strong>{{ $message['name'] ?? 'You' }}</strong><br>
-                                                {!! nl2br(e($message['message'])) !!}
-                                            </div>
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ul>
-                        </div>
+                <div class="card-body bg-light" style="max-height: 600px; overflow-y: auto;">
+                    <div class="d-flex flex-column gap-3">
+                        @foreach($ticket->content as $message)
+                            @if(isset($message['sender']) && $message['sender'] == 'admin')
+                                <div class="card bg-white border-start border-primary border-4 col-md-9 align-self-start shadow-sm">
+                                    <div class="card-body py-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-primary fw-bold"><i class="fas fa-user-shield me-1"></i> Support Admin</span>
+                                            <small class="text-muted">{{ $message['created_at'] }}</small>
+                                        </div>
+                                        <div class="text-dark">
+                                            {!! nl2br(e($message['message'])) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="card bg-success-subtle border-start border-success border-4 col-md-9 align-self-end shadow-sm">
+                                    <div class="card-body py-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="text-success fw-bold"><i class="fas fa-user me-1"></i> {{ $message['name'] ?? 'You' }}</span>
+                                            <small class="text-muted">{{ $message['created_at'] }}</small>
+                                        </div>
+                                        <div class="text-dark">
+                                            {!! nl2br(e($message['message'])) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
                 
                 @if($ticket->status != 'Closed')
-                    <hr class="m-0">
-                    <form action="{{ route('member.tickets.reply', $ticket->id) }}" method="POST" class="theme-form">
-                        @csrf
-                        <div class="card-body">
+                    <div class="card-footer">
+                        <form action="{{ route('member.tickets.reply', $ticket->id) }}" method="POST">
+                            @csrf
                             <div class="mb-3">
-                                <label class="col-form-label pt-0" for="message">Reply to this ticket</label>
+                                <label class="form-label fw-bold" for="message">Reply to this ticket</label>
                                 <textarea class="form-control" name="message" id="message" rows="4" placeholder="Type your message here..." required></textarea>
                             </div>
-                        </div>
-                        <div class="card-footer text-end">
-                            <button class="btn btn-primary" type="submit">Send Reply</button>
-                            <a href="{{ route('member.tickets.index') }}" class="btn btn-secondary">Back to Tickets</a>
-                        </div>
-                    </form>
+                            <div class="text-end">
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-reply me-1"></i> Send Reply</button>
+                                <a href="{{ route('member.tickets.index') }}" class="btn btn-secondary">Back to Tickets</a>
+                            </div>
+                        </form>
+                    </div>
                 @else
                     <div class="card-footer text-center">
                         <div class="alert alert-secondary mb-0">
-                            This ticket has been closed. You cannot send any more replies.
+                            <i class="fas fa-lock me-1"></i> This ticket has been closed. You cannot send any more replies.
                         </div>
                     </div>
                 @endif
@@ -109,5 +103,4 @@
         </div>
     </div>
 </div>
-<!-- Container-fluid Ends-->
 @endsection

@@ -1,23 +1,15 @@
 @extends('layouts.member.master')
 
 @section('content')
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>Order Details</h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Home</a></li>
-                    <li class="breadcrumb-item">SMM</li>
-                    <li class="breadcrumb-item"><a href="{{ route('member.smm.history') }}">Order History</a></li>
-                    <li class="breadcrumb-item active">#{{ $order->invoice }}</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Order Details</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item">SMM</li>
+        <li class="breadcrumb-item"><a href="{{ route('member.smm.history') }}">Order History</a></li>
+        <li class="breadcrumb-item active">#{{ $order->invoice }}</li>
+    </ol>
 
-<div class="container-fluid">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -38,21 +30,23 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                    <h5>SMM Order Details</h5>
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-shopping-bag me-1"></i> SMM Order Details
+                    </div>
                     <div>
                         @if($order->api && $order->sid)
                             @if(in_array(strtolower($order->status_order), ['success', 'finish', 'completed', 'complete']))
-                                <button class="btn btn-info btn-sm" disabled><i class="fa fa-refresh"></i> Sync Status</button>
+                                <button class="btn btn-info btn-sm text-dark" disabled><i class="fas fa-sync-alt"></i> Sync Status</button>
                             @else
                                 <form method="POST" action="{{ route('member.smm.order.sync', $order->id) }}" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="btn btn-info btn-sm"><i class="fa fa-refresh"></i> Sync Status</button>
+                                    <button type="submit" class="btn btn-info btn-sm text-dark"><i class="fas fa-sync-alt"></i> Sync Status</button>
                                 </form>
                             @endif
                         @endif
-                        <a href="{{ route('member.smm.history') }}" class="btn btn-secondary btn-sm"><i class="fa fa-arrow-left"></i> Back</a>
+                        <a href="{{ route('member.smm.history') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -61,7 +55,7 @@
                             <tbody>
                                 <tr>
                                     <th width="30%">Invoice No.</th>
-                                    <td><strong class="text-primary">{{ $order->invoice }}</strong></td>
+                                    <td><strong class="text-primary">#{{ $order->invoice }}</strong></td>
                                 </tr>
                                 <tr>
                                     <th>Service Category</th>
@@ -96,24 +90,29 @@
                                 <tr>
                                     <th>Order Status</th>
                                     <td>
-                                        @if($order->status_order == 'Success' || $order->status_order == 'Finish')
-                                            <span class="badge badge-success">{{ $order->status_order }}</span>
-                                        @elseif($order->status_order == 'Pending')
-                                            <span class="badge badge-warning text-dark">{{ $order->status_order }}</span>
-                                        @elseif($order->status_order == 'In Progres' || $order->status_order == 'Partial')
-                                            <span class="badge badge-info">{{ $order->status_order }}</span>
-                                        @else
-                                            <span class="badge badge-danger">{{ $order->status_order }}</span>
-                                        @endif
+                                        @php
+                                            $status = strtolower($order->status_order);
+                                            $badgeClass = 'bg-primary';
+                                            if ($status === 'success' || $status === 'completed' || $status === 'finish') {
+                                                $badgeClass = 'bg-success';
+                                            } elseif ($status === 'pending') {
+                                                $badgeClass = 'bg-warning text-dark';
+                                            } elseif ($status === 'cancel' || $status === 'canceled' || $status === 'error') {
+                                                $badgeClass = 'bg-danger';
+                                            } elseif ($status === 'processing' || $status === 'in progres' || $status === 'partial') {
+                                                $badgeClass = 'bg-info text-dark';
+                                            }
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }}">{{ $order->status_order }}</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Auto Refill</th>
                                     <td>
                                         @if($order->refill)
-                                            <span class="badge badge-primary"><i class="fa fa-refresh"></i> Active</span>
+                                            <span class="badge bg-primary"><i class="fas fa-sync-alt"></i> Active</span>
                                         @else
-                                            <span class="badge badge-light text-dark">Inactive</span>
+                                            <span class="badge bg-light text-dark">Inactive</span>
                                         @endif
                                     </td>
                                 </tr>
