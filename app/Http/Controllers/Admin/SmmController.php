@@ -371,9 +371,10 @@ class SmmController extends Controller
             }
 
             $apis = ApiSmm::where('status', 'Active')->orderBy('name', 'asc')->get();
+            $categories = CategorySmm::where('status', 'Active')->orderBy('name', 'asc')->get();
             $selectedApiId = $api->id;
 
-            return view('admin.smm.import.index', compact('apis', 'fetchedServices', 'selectedApiId'));
+            return view('admin.smm.import.index', compact('apis', 'categories', 'fetchedServices', 'selectedApiId'));
 
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -390,12 +391,14 @@ class SmmController extends Controller
             'services' => 'required|array',
             'markup' => 'required|numeric|min:0',
             'reseller_markup' => 'required|numeric|min:0',
+            'id_category_smm' => 'nullable|exists:category_smm,id',
         ]);
 
         $api = ApiSmm::findOrFail($request->id_api_smm);
         $markup = floatval($request->markup);
         $resellerMarkup = floatval($request->reseller_markup);
         $selectedServices = $request->services;
+        $targetCategoryId = $request->id_category_smm;
 
         $count = 0;
 
@@ -403,16 +406,22 @@ class SmmController extends Controller
             $serviceData = json_decode($serviceDataStr, true);
             if (!$serviceData) continue;
 
-            $categoryName = trim($serviceData['category'] ?? 'Uncategorized');
+            // Determine local Category ID
+            if ($targetCategoryId) {
+                $categoryId = $targetCategoryId;
+            } else {
+                $categoryName = trim($serviceData['category'] ?? 'Uncategorized');
 
-            // Find or create Category
-            $category = CategorySmm::firstOrCreate(
-                ['name' => $categoryName],
-                [
-                    'code' => \Illuminate\Support\Str::slug($categoryName),
-                    'status' => 'Active'
-                ]
-            );
+                // Find or create Category dynamically
+                $category = CategorySmm::firstOrCreate(
+                    ['name' => $categoryName],
+                    [
+                        'code' => \Illuminate\Support\Str::slug($categoryName),
+                        'status' => 'Active'
+                    ]
+                );
+                $categoryId = $category->id;
+            }
 
             // Determine Service Type
             $dbType = 'Default';
@@ -445,7 +454,7 @@ class SmmController extends Controller
                     'pid' => strval($serviceData['service']),
                 ],
                 [
-                    'id_category_smm' => $category->id,
+                    'id_category_smm' => $categoryId,
                     'name_service' => $serviceData['name'] ?? 'SMM Service',
                     'min_order' => intval($serviceData['min'] ?? 0),
                     'max_order' => intval($serviceData['max'] ?? 0),

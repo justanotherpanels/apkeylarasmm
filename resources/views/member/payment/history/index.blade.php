@@ -1,23 +1,14 @@
 @extends('layouts.member.master')
 
 @section('content')
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>Deposit History</h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Home</a></li>
-                    <li class="breadcrumb-item">History</li>
-                    <li class="breadcrumb-item active">Deposit History</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Deposit History</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item">History</li>
+        <li class="breadcrumb-item active">Deposit History</li>
+    </ol>
 
-<!-- Container-fluid starts-->
-<div class="container-fluid">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -36,66 +27,83 @@
         </div>
     @endif
 
-    <div class="row">
-        <!-- Zero Configuration Starts-->
-        <div class="col-sm-12">
-            <div class="card">
-                
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="display" id="basic-1">
-                            <thead>
-                                <tr>
-                                    <th>Invoice ID</th>
-                                    <th>Date</th>
-                                    <th>Payment Method</th>
-                                    <th>Amount</th>
-                                    <th>Currency</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($deposits as $deposit)
-                                    <tr>
-                                        <td><strong>#{{ $deposit->invoice }}</strong></td>
-                                        <td>{{ $deposit->create_at ? $deposit->create_at->format('Y-m-d H:i') : 'N/A' }}</td>
-                                        <td>{{ $deposit->detail_transaction['payment_method'] ?? 'N/A' }}</td>
-                                        <td>${{ number_format($deposit->amount, 2) }}</td>
-                                        <td>USD</td>
-                                        <td>
-                                            @if($deposit->status_payment === 'Success')
-                                                <span class="badge badge-success">Success</span>
-                                            @elseif($deposit->status_payment === 'Pending')
-                                                <span class="badge badge-warning text-dark">Pending</span>
-                                            @elseif($deposit->status_payment === 'Cancel')
-                                                <span class="badge badge-secondary">Cancelled</span>
-                                            @else
-                                                <span class="badge badge-danger">Failed</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-1 align-items-center">
-                                                <a href="{{ route('member.payment.history.show', $deposit->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="View Details"><i class="fa fa-eye"></i> Detail</a>
-                                                @if($deposit->status_payment === 'Pending')
-                                                    <form method="POST" action="{{ route('member.payment.history.sync', $deposit->invoice) }}" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></button>
-                                                    </form>
-                                                @else
-                                                    <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status"><i class="fa fa-refresh"></i></button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Deposits
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Date</th>
+                            <th>Payment Method</th>
+                            <th>Amount</th>
+                            <th>Currency</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Date</th>
+                            <th>Payment Method</th>
+                            <th>Amount</th>
+                            <th>Currency</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach($deposits as $deposit)
+                            <tr>
+                                <td><strong class="text-primary">#{{ $deposit->invoice }}</strong></td>
+                                <td>{{ $deposit->create_at ? $deposit->create_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                <td>{{ $deposit->detail_transaction['payment_method'] ?? 'N/A' }}</td>
+                                <td>${{ number_format($deposit->amount, 2) }}</td>
+                                <td>USD</td>
+                                <td>
+                                    @php
+                                        $status = strtolower($deposit->status_payment);
+                                        $badgeClass = 'bg-primary';
+                                        if ($status === 'success' || $status === 'completed') {
+                                            $badgeClass = 'bg-success';
+                                        } elseif ($status === 'pending') {
+                                            $badgeClass = 'bg-warning text-dark';
+                                        } elseif ($status === 'cancel' || $status === 'cancelled') {
+                                            $badgeClass = 'bg-secondary';
+                                        } else {
+                                            $badgeClass = 'bg-danger';
+                                        }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }}">{{ $deposit->status_payment }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <a href="{{ route('member.payment.history.show', $deposit->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="View Details">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                        @if($deposit->status_payment === 'Pending')
+                                            <form method="POST" action="{{ route('member.payment.history.sync', $deposit->invoice) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
-<!-- Container-fluid ends-->
 @endsection

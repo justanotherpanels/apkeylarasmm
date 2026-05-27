@@ -1,25 +1,14 @@
 @extends('layouts.member.master')
 
-
 @section('content')
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>Order History</h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Home</a></li>
-                    <li class="breadcrumb-item">SMM</li>
-                    <li class="breadcrumb-item active">Order History</li>
-                </ol>
-            </div>
-            
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Order History</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item">SMM</li>
+        <li class="breadcrumb-item active">Order History</li>
+    </ol>
 
-<!-- Container-fluid starts-->
-<div class="container-fluid">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -38,80 +27,102 @@
         </div>
     @endif
 
-    <div class="row">
-        <!-- Zero Configuration Starts-->
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5>SMM Orders</h5>
-                    <span>All SMM orders placed through your account, fetched directly from database.</span>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="display" id="basic-1">
-                            <thead>
-                                <tr>
-                                    <th>Invoice</th>
-                                    <th>Service</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Start Count</th>
-                                    <th>Remains</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($orders as $order)
-                                <tr>
-                                    <td><strong>{{ $order->invoice }}</strong></td>
-                                    <td>{{ $order->service->name_service ?? 'N/A' }}</td>
-                                    <td>{{ number_format($order->amount) }}</td>
-                                    <td>${{ number_format($order->price_sale, 2) }}</td>
-                                    <td>{{ number_format($order->start_count) }}</td>
-                                    <td>{{ number_format($order->remains) }}</td>
-                                    <td>
-                                        @if($order->status_order == 'Success' || $order->status_order == 'Finish')
-                                            <span class="badge badge-success">{{ $order->status_order }}</span>
-                                        @elseif($order->status_order == 'Pending')
-                                            <span class="badge badge-warning text-dark">{{ $order->status_order }}</span>
-                                        @elseif($order->status_order == 'In Progres' || $order->status_order == 'Partial')
-                                            <span class="badge badge-info">{{ $order->status_order }}</span>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            SMM Orders
+        </div>
+        <div class="card-body">
+            <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Service</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Start Count</th>
+                            <th>Remains</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Invoice</th>
+                            <th>Service</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Start Count</th>
+                            <th>Remains</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach($orders as $order)
+                        <tr>
+                            <td><strong class="text-primary">#{{ $order->invoice }}</strong></td>
+                            <td>{{ $order->service->name_service ?? 'N/A' }}</td>
+                            <td>{{ number_format($order->amount) }}</td>
+                            <td>${{ number_format($order->price_sale, 4) }}</td>
+                            <td>{{ number_format($order->start_count) }}</td>
+                            <td>{{ number_format($order->remains) }}</td>
+                            <td>
+                                @php
+                                    $status = strtolower($order->status_order);
+                                    $badgeClass = 'bg-primary';
+                                    if ($status === 'success' || $status === 'completed' || $status === 'finish') {
+                                        $badgeClass = 'bg-success';
+                                    } elseif ($status === 'pending') {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    } elseif ($status === 'cancel' || $status === 'canceled' || $status === 'error') {
+                                        $badgeClass = 'bg-danger';
+                                    } elseif ($status === 'processing' || $status === 'in progres') {
+                                        $badgeClass = 'bg-info text-dark';
+                                    } elseif ($status === 'partial') {
+                                        $badgeClass = 'bg-primary';
+                                    }
+                                @endphp
+                                <span class="badge {{ $badgeClass }}">{{ $order->status_order }}</span>
+                            </td>
+                            <td>{{ $order->create_at ? $order->create_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                            <td>
+                                <div class="d-flex gap-1 align-items-center">
+                                    <a href="{{ route('member.smm.history.show', $order->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="Order Details">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                    @if($order->status_order == 'Pending')
+                                        <a href="{{ route('member.payment.add') }}" class="btn btn-success btn-sm px-2 py-1" title="Pay">
+                                            <i class="fas fa-credit-card"></i> Pay
+                                        </a>
+                                    @else
+                                        <button class="btn btn-success btn-sm px-2 py-1" disabled title="Pay">
+                                            <i class="fas fa-credit-card"></i> Pay
+                                        </button>
+                                    @endif
+                                    @if($order->api && $order->sid)
+                                        @if(in_array(strtolower($order->status_order), ['success', 'finish', 'completed', 'complete']))
+                                            <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
                                         @else
-                                            <span class="badge badge-danger">{{ $order->status_order }}</span>
+                                            <form method="POST" action="{{ route('member.smm.order.sync', $order->id) }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </form>
                                         @endif
-                                    </td>
-                                    <td>{{ $order->create_at ? $order->create_at->format('Y-m-d H:i') : 'N/A' }}</td>
-                                    <td>
-                                        <div class="d-flex gap-1 align-items-center">
-                                            <a href="{{ route('member.smm.history.show', $order->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="Order Details"><i class="fa fa-eye"></i> Detail</a>
-                                            @if($order->status_order == 'Pending')
-                                                <a href="{{ route('member.payment.add') }}" class="btn btn-success btn-sm px-2 py-1" title="Pay"><i class="fa fa-credit-card"></i> Pay</a>
-                                            @else
-                                                <button class="btn btn-success btn-sm px-2 py-1" disabled title="Pay"><i class="fa fa-credit-card"></i> Pay</button>
-                                            @endif
-                                            @if($order->api && $order->sid)
-                                                @if(in_array(strtolower($order->status_order), ['success', 'finish', 'completed', 'complete']))
-                                                    <button class="btn btn-info btn-sm px-2 py-1" disabled title="Sync Status"><i class="fa fa-refresh"></i></button>
-                                                @else
-                                                    <form method="POST" action="{{ route('member.smm.order.sync', $order->id) }}" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-info btn-sm px-2 py-1" title="Sync Status"><i class="fa fa-refresh"></i></button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
 @endsection
-

@@ -65,7 +65,10 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.smm.api.sync', $api->id) }}" class="btn btn-info btn-sm px-2 py-1 text-white" title="Sync Balance"><i class="fas fa-sync-alt"></i></a>
+                            <form action="{{ route('admin.smm.api.sync', $api->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-info btn-sm px-2 py-1 text-white" title="Sync Balance"><i class="fas fa-sync-alt"></i></button>
+                            </form>
                             <a href="{{ route('admin.smm.api.edit', $api->id) }}" class="btn btn-warning btn-sm px-2 py-1" title="Edit"><i class="fas fa-pencil-alt"></i></a>
                             <form action="{{ route('admin.smm.api.destroy', $api->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus provider ini?');" style="display:inline-block;">
                                 @csrf
