@@ -228,7 +228,8 @@ class PaymentController extends Controller
                 'detail_transaction' => [
                     'paypal_order_id' => $paypalOrderId,
                     'payment_method' => 'Paypal',
-                    'amount_raw' => $amount
+                    'amount_raw' => $amount,
+                    'redirect_url' => $approveUrl
                 ]
             ]);
 
@@ -297,7 +298,8 @@ class PaymentController extends Controller
                     'detail_transaction' => [
                         'cryptomus_uuid' => $uuid,
                         'payment_method' => 'Cryptomus',
-                        'amount_raw' => $amount
+                        'amount_raw' => $amount,
+                        'redirect_url' => $checkoutUrl
                     ]
                 ]);
 
@@ -734,5 +736,39 @@ class PaymentController extends Controller
         }
 
         return back()->withErrors(['error' => 'Unknown payment method.']);
+    }
+
+    /**
+     * Redirect to the payment gateway to pay the pending deposit.
+     */
+    public function payDeposit($invoice)
+    {
+        $deposit = HistoryDeposit::where('id_user', auth()->id())
+            ->where('invoice', $invoice)
+            ->firstOrFail();
+
+        if (strtolower($deposit->status_payment) !== 'pending') {
+            return redirect()->route('member.payment.history')->withErrors(['error' => 'This deposit is not pending.']);
+        }
+
+        $redirectUrl = $deposit->detail_transaction['redirect_url'] ?? null;
+        if ($redirectUrl) {
+            return redirect()->away($redirectUrl);
+        }
+
+        // Fallback/Re-generate if redirectUrl is missing
+        $method = strtolower($deposit->detail_transaction['payment_method'] ?? '');
+        if ($method === 'paypal') {
+            $paypalOrderId = $deposit->detail_transaction['paypal_order_id'] ?? null;
+            if ($paypalOrderId) {
+                $gateway = PaymentGateway::where('type', 'Paypal')->first();
+                $mode = $gateway ? ($gateway->api_config['mode'] ?? 'sandbox') : 'sandbox';
+                $domain = $mode === 'live' ? 'www.paypal.com' : 'www.sandbox.paypal.com';
+                return redirect()->away("https://{$domain}/checkoutnow?token={$paypalOrderId}");
+            }
+        }
+
+        // If we cannot find a checkout URL, redirect to the show page
+        return redirect()->route('member.payment.history.show', $invoice)->withErrors(['error' => 'Could not retrieve payment link automatically. Please check status or try again.']);
     }
 }

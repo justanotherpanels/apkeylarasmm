@@ -76,12 +76,14 @@
                         <div class="mb-3 d-none" id="quantityGroup">
                             <label class="form-label" for="quantityInput">Quantity</label>
                             <input class="form-control" id="quantityInput" name="amount" type="number" value="{{ old('amount') }}" placeholder="Min - Max">
+                            <div class="form-text text-muted" id="quantityHelp"></div>
                         </div>
 
                         <!-- Comments Field (Custom Comments) -->
                         <div class="mb-3 d-none" id="commentsGroup">
                             <label class="form-label" for="commentsInput">Comments (One per line)</label>
                             <textarea class="form-control" id="commentsInput" name="comments" rows="5" placeholder="Enter comments, one per line...">{{ old('comments') }}</textarea>
+                            <div class="form-text text-muted" id="commentsHelp"></div>
                         </div>
 
                         <!-- Answer Number Field (Poll) -->
@@ -201,8 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const targetInput = document.getElementById('targetInput');
     const quantityGroup = document.getElementById('quantityGroup');
     const quantityInput = document.getElementById('quantityInput');
+    const quantityHelp = document.getElementById('quantityHelp');
     const commentsGroup = document.getElementById('commentsGroup');
     const commentsInput = document.getElementById('commentsInput');
+    const commentsHelp = document.getElementById('commentsHelp');
     const answerNumberGroup = document.getElementById('answerNumberGroup');
     const answerNumberInput = document.getElementById('answerNumberInput');
     const subscriptionsGroup = document.getElementById('subscriptionsGroup');
@@ -300,6 +304,9 @@ echo $response;`;
         minInput.removeAttribute('required');
         maxInput.removeAttribute('required');
         postsInput.removeAttribute('required');
+
+        if (quantityHelp) quantityHelp.textContent = '';
+        if (commentsHelp) commentsHelp.textContent = '';
     }
 
     // Load services when category changes
@@ -316,10 +323,15 @@ echo $response;`;
 
         updateCurlSnippet();
 
-        const getServicesUrl = "{{ route('member.smm.get_services', '') }}/" + categoryId;
+        const getServicesUrl = "{{ route('member.smm.get_services', ['categoryId' => 'CATEGORY_ID'], false) }}".replace('CATEGORY_ID', categoryId);
 
         fetch(getServicesUrl)
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
+            })
             .then(services => {
                 loadedServices = services;
                 services.forEach(service => {
@@ -335,6 +347,10 @@ echo $response;`;
                     serviceSelect.value = oldServiceId;
                     serviceSelect.dispatchEvent(new Event('change'));
                 }
+            })
+            .catch(err => {
+                console.error('Error fetching services:', err);
+                alert('Failed to load services. Please check your connection.');
             });
     });
 
@@ -366,18 +382,27 @@ echo $response;`;
             quantityGroup.classList.remove('d-none');
             quantityInput.setAttribute('required', 'required');
             quantityInput.placeholder = `Min: ${service.min_order} - Max: ${service.max_order}`;
+            if (quantityHelp) {
+                quantityHelp.textContent = `Minimum Order: ${parseInt(service.min_order).toLocaleString()} | Maximum Order: ${parseInt(service.max_order).toLocaleString()}`;
+            }
         } else if (type === 'Custom Comments') {
             targetLabel.textContent = 'Link';
             targetInput.placeholder = 'https://example.com/username';
             commentsGroup.classList.remove('d-none');
             commentsInput.setAttribute('required', 'required');
             commentsInput.placeholder = `Enter comments, one per line (Min: ${service.min_order} - Max: ${service.max_order})`;
+            if (commentsHelp) {
+                commentsHelp.textContent = `Minimum Comments: ${parseInt(service.min_order).toLocaleString()} | Maximum Comments: ${parseInt(service.max_order).toLocaleString()}`;
+            }
         } else if (type === 'Poll') {
             targetLabel.textContent = 'Link';
             targetInput.placeholder = 'https://example.com/username';
             quantityGroup.classList.remove('d-none');
             quantityInput.setAttribute('required', 'required');
             quantityInput.placeholder = `Min: ${service.min_order} - Max: ${service.max_order}`;
+            if (quantityHelp) {
+                quantityHelp.textContent = `Minimum Order: ${parseInt(service.min_order).toLocaleString()} | Maximum Order: ${parseInt(service.max_order).toLocaleString()}`;
+            }
             answerNumberGroup.classList.remove('d-none');
             answerNumberInput.setAttribute('required', 'required');
         } else if (type === 'Subscriptions') {

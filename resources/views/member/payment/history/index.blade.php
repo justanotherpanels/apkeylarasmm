@@ -85,6 +85,15 @@
                                         <a href="{{ route('member.payment.history.show', $deposit->invoice) }}" class="btn btn-primary btn-sm px-2 py-1" title="View Details">
                                             <i class="fas fa-eye"></i> Detail
                                         </a>
+                                        @if(strtolower($deposit->status_payment) === 'pending')
+                                            <a href="{{ route('member.payment.history.pay', $deposit->invoice) }}" class="btn btn-success btn-sm px-2 py-1" title="Pay Deposit">
+                                                <i class="fas fa-credit-card"></i> Pay
+                                            </a>
+                                        @else
+                                            <button class="btn btn-success btn-sm px-2 py-1" disabled title="Pay Deposit">
+                                                <i class="fas fa-credit-card"></i> Pay
+                                            </button>
+                                        @endif
                                         @if($deposit->status_payment === 'Pending')
                                             <form method="POST" action="{{ route('member.payment.history.sync', $deposit->invoice) }}" class="d-inline">
                                                 @csrf

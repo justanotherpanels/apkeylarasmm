@@ -78,6 +78,7 @@ Route::middleware(['auth'])->prefix('member')->name('member.')->group(function (
     Route::post('/payment/add', [App\Http\Controllers\Member\PaymentController::class, 'store'])->name('payment.store');
     Route::get('/payment/history', [App\Http\Controllers\Member\PaymentController::class, 'history'])->name('payment.history');
     Route::get('/payment/history/{invoice}', [App\Http\Controllers\Member\PaymentController::class, 'showDeposit'])->name('payment.history.show');
+    Route::get('/payment/history/{invoice}/pay', [App\Http\Controllers\Member\PaymentController::class, 'payDeposit'])->name('payment.history.pay');
     Route::post('/payment/history/{invoice}/sync', [App\Http\Controllers\Member\PaymentController::class, 'syncDeposit'])->name('payment.history.sync');
     Route::get('/payment/paypal/callback', [App\Http\Controllers\Member\PaymentController::class, 'paypalCallback'])->name('payment.paypal.callback');
 

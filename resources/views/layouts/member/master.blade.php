@@ -145,5 +145,7 @@
         <script src="{{ asset('website/assets/demo/chart-bar-demo.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="{{ asset('website/js/datatables-simple-demo.js') }}"></script>
+        @yield('js')
+        {!! $setting->footer_code ?? '' !!}
     </body>
 </html>

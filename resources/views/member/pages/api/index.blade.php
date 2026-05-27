@@ -1,29 +1,20 @@
 @extends('layouts.member.master')
 
 @section('content')
-<div class="container-fluid">
-    <div class="page-header">
-        <div class="row">
-            <div class="col-sm-6">
-                <h3>API Documentation</h3>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Home</a></li>
-                    <li class="breadcrumb-item">Pages</li>
-                    <li class="breadcrumb-item active">API Documentation</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">API Documentation</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item">Pages</li>
+        <li class="breadcrumb-item active">API Documentation</li>
+    </ol>
 
-<!-- Container-fluid starts-->
-<div class="container-fluid">
     <div class="row">
         <!-- Sidebar Navigation -->
         <div class="col-sm-12 col-md-3 mb-4">
-            <div class="card">
-                <div class="card-header pb-0">
-                    <h5>API Sections</h5>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-list me-1"></i> API Sections
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush" id="api-tabs" role="tablist">
@@ -34,13 +25,13 @@
                             <i class="fa fa-list me-2"></i> Services List
                         </a>
                         <a class="list-group-item list-group-item-action" id="balance-tab" data-bs-toggle="list" href="#balance" role="tab">
-                            <i class="fa fa-money me-2"></i> Check Balance
+                            <i class="fa fa-money-bill me-2"></i> Check Balance
                         </a>
                         <a class="list-group-item list-group-item-action" id="order-tab" data-bs-toggle="list" href="#order" role="tab">
                             <i class="fa fa-shopping-cart me-2"></i> Place Order
                         </a>
                         <a class="list-group-item list-group-item-action" id="status-tab" data-bs-toggle="list" href="#status" role="tab">
-                            <i class="fa fa-refresh me-2"></i> Order Status
+                            <i class="fa fa-sync-alt me-2"></i> Order Status
                         </a>
                         <a class="list-group-item list-group-item-action" id="create-deposit-tab" data-bs-toggle="list" href="#create-deposit" role="tab">
                             <i class="fa fa-plus-circle me-2"></i> Request Deposit
@@ -64,14 +55,15 @@
                             {{ session('success') }}
                         </div>
                     @endif
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>General API Overview</h5>
-                            <span>Integrate our SMM services into your custom applications or panels.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle me-1"></i> General API Overview
                         </div>
                         <div class="card-body">
+                            <p class="text-muted small mb-4">Integrate our SMM services into your custom applications or panels.</p>
+                            
                             <div class="mb-4">
-                                <h6>API Endpoint</h6>
+                                <h6 class="fw-bold">API Endpoint</h6>
                                 <div class="bg-light p-3 rounded border">
                                     <code class="text-primary font-weight-bold" style="font-size: 1.1rem;">POST {{ url('/api/v2') }}</code>
                                 </div>
@@ -79,7 +71,7 @@
                             </div>
 
                             <div class="mb-4">
-                                <h6>Authentication</h6>
+                                <h6 class="fw-bold">Authentication</h6>
                                 <p class="text-muted">You must authenticate your API requests by supplying your account API Key in the payload. Keep your API key private and secure.</p>
                                 
                                 <div class="col-md-8 px-0">
@@ -101,7 +93,7 @@
                             </div>
 
                             <div>
-                                <h6>Format & Content-Type</h6>
+                                <h6 class="fw-bold">Format & Content-Type</h6>
                                 <p class="text-muted">Accepts parameters in standard HTTP POST payload (<code>application/x-www-form-urlencoded</code>) or raw JSON (<code>application/json</code>). The API response is always returned in JSON format.</p>
                             </div>
                         </div>
@@ -110,13 +102,14 @@
 
                 <!-- Services List Tab -->
                 <div class="tab-pane fade" id="services" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Fetch Services List</h5>
-                            <span>Retrieve all SMM services available for ordering.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-list me-1"></i> Fetch Services List
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Retrieve all SMM services available for ordering.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -132,19 +125,19 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>services</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -152,7 +145,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>[
   {
@@ -185,13 +178,14 @@
 
                 <!-- Check Balance Tab -->
                 <div class="tab-pane fade" id="balance" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Check User Balance</h5>
-                            <span>Verify your remaining balance and account currency.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-wallet me-1"></i> Check User Balance
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Verify your remaining balance and account currency.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -207,19 +201,19 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>balance</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -227,7 +221,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>{
   "status": "success",
@@ -241,13 +235,14 @@
 
                 <!-- Place Order Tab -->
                 <div class="tab-pane fade" id="order" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Place New Order</h5>
-                            <span>Submit a new order request to the platform.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-shopping-cart me-1"></i> Place New Order
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Submit a new order request to the platform.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -263,37 +258,37 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>add</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>service</code></td>
                                             <td>integer</td>
                                             <td>The target SMM service ID.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>link</code></td>
                                             <td>string</td>
                                             <td>Target link URL (e.g. video URL or account page).</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>quantity</code></td>
                                             <td>integer</td>
                                             <td>Number of units to order.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -304,7 +299,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>{
   "status": "success",
@@ -317,13 +312,14 @@
 
                 <!-- Order Status Tab -->
                 <div class="tab-pane fade" id="status" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Check Order Status</h5>
-                            <span>Verify progress details, start counts, and remaining counts.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-sync-alt me-1"></i> Check Order Status
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Verify progress details, start counts, and remaining counts.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -339,25 +335,25 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>status</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>order</code></td>
                                             <td>integer</td>
                                             <td>The target SMM Order ID.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -366,7 +362,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>{
   "status": "Completed",
@@ -382,13 +378,14 @@
 
                 <!-- Request Deposit Tab -->
                 <div class="tab-pane fade" id="create-deposit" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Request / Create Deposit</h5>
-                            <span>Programmatically initiate a PayPal or Cryptomus deposit. Returns a checkout URL.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-plus-circle me-1"></i> Request / Create Deposit
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Programmatically initiate a PayPal or Cryptomus deposit. Returns a checkout URL.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -404,31 +401,31 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>create_deposit</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>amount</code></td>
                                             <td>numeric</td>
                                             <td>Deposit amount in USD (minimum: 1.00)</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>payment_method</code></td>
                                             <td>string</td>
                                             <td>Allowed values: <code>paypal</code> or <code>cryptomus</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -438,7 +435,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>{
   "status": "success",
@@ -452,13 +449,14 @@
 
                 <!-- Deposit Status Tab -->
                 <div class="tab-pane fade" id="deposit" role="tabpanel">
-                    <div class="card">
-                        <div class="card-header pb-0">
-                            <h5>Fetch Deposit Status</h5>
-                            <span>Retrieve payment receipt metadata and verification status.</span>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-receipt me-1"></i> Fetch Deposit Status
                         </div>
                         <div class="card-body">
-                            <h6>Request Parameters</h6>
+                            <p class="text-muted small mb-4">Retrieve payment receipt metadata and verification status.</p>
+                            
+                            <h6 class="fw-bold">Request Parameters</h6>
                             <div class="table-responsive mb-4">
                                 <table class="table table-striped table-bordered">
                                     <thead>
@@ -474,25 +472,25 @@
                                             <td><code>key</code></td>
                                             <td>string</td>
                                             <td>Your API authentication key.</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>action</code></td>
                                             <td>string</td>
                                             <td>Set to <code>deposit_status</code></td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                         <tr>
                                             <td><code>invoice</code></td>
                                             <td>string</td>
                                             <td>The deposit invoice code (e.g. <code>DEP-FIHXQWNWPY</code>).</td>
-                                            <td><span class="badge badge-success">Yes</span></td>
+                                            <td><span class="badge bg-success">Yes</span></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
 
-                            <h6>Example JSON Request</h6>
+                            <h6 class="fw-bold">Example JSON Request</h6>
                             <div class="bg-light p-3 rounded mb-4 border">
 <pre class="mb-0"><code>{
   "key": "{{ auth()->user()->api_key ?? 'your_api_key' }}",
@@ -501,7 +499,7 @@
 }</code></pre>
                             </div>
 
-                            <h6>Example JSON Response</h6>
+                            <h6 class="fw-bold">Example JSON Response</h6>
                             <div class="bg-light p-3 rounded border">
 <pre class="mb-0"><code>{
   "status": "Success",
@@ -519,7 +517,6 @@
         </div>
     </div>
 </div>
-<!-- Container-fluid ends-->
 
 <script>
 function toggleApiKey(event) {
