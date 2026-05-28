@@ -16,6 +16,30 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/services', function () {
+    $services = App\Models\ServiceSmm::with('category')
+        ->where('status', 'Active')
+        ->orderBy('id_category_smm', 'asc')
+        ->get();
+    return view('pages.service', compact('services'));
+})->name('services');
+
+Route::get('/privacy', function () {
+    return view('pages.privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('pages.term');
+})->name('terms');
+
+Route::get('/about', function () {
+    return view('pages.about');
+})->name('about');
+
+Route::get('/contact', function () {
+    return view('pages.contact');
+})->name('contact');
+
 Route::get('/auth/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/auth/login', [AuthController::class, 'login'])->name('login.post');
 
