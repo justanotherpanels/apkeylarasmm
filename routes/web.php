@@ -259,16 +259,45 @@ Route::prefix('api-frontend/auth')->group(function () {
     Route::post('/reset-password', [App\Http\Controllers\ApiFrontend\AuthController::class, 'resetPassword'])->middleware('throttle:10,1')->name('api-frontend.reset_password');
 });
 
+// API Mobile authentication endpoints
+Route::prefix('api-mobile/auth')->group(function () {
+    Route::post('/login', [App\Http\Controllers\ApiMobile\AuthController::class, 'login'])->middleware('throttle:20,1')->name('api-mobile.login');
+    Route::post('/verify-otp', [App\Http\Controllers\ApiMobile\AuthController::class, 'verifyOtp'])->middleware('throttle:10,1')->name('api-mobile.verify_otp');
+    Route::post('/resend-otp', [App\Http\Controllers\ApiMobile\AuthController::class, 'resendOtp'])->middleware('throttle:5,1')->name('api-mobile.resend_otp');
+    Route::post('/forget', [App\Http\Controllers\ApiMobile\AuthController::class, 'forget'])->middleware('throttle:5,1')->name('api-mobile.forget');
+    Route::post('/reset-password', [App\Http\Controllers\ApiMobile\AuthController::class, 'resetPassword'])->middleware('throttle:10,1')->name('api-mobile.reset_password');
+    
+    // Step by step registration routes
+    Route::post('/register/step1', [App\Http\Controllers\ApiMobile\AuthController::class, 'registerStep1'])->middleware('throttle:10,1')->name('api-mobile.register.step1');
+    Route::post('/register/resend-otp', [App\Http\Controllers\ApiMobile\AuthController::class, 'registerResendEmailOtp'])->middleware('throttle:5,1')->name('api-mobile.register.resend_otp');
+    Route::post('/register/verify-otp', [App\Http\Controllers\ApiMobile\AuthController::class, 'registerVerifyEmailOtp'])->middleware('throttle:10,1')->name('api-mobile.register.verify_otp');
+    Route::post('/register/step2', [App\Http\Controllers\ApiMobile\AuthController::class, 'registerStep2'])->middleware('throttle:20,1')->name('api-mobile.register.step2');
+});
+
 // API Frontend dashboard endpoints
 Route::post('/api-frontend/dashboard', [App\Http\Controllers\ApiFrontend\DashboardController::class, 'index'])->name('api-frontend.dashboard');
+
+// API Mobile dashboard endpoints
+Route::post('/api-mobile/dashboard', [App\Http\Controllers\ApiMobile\DashboardController::class, 'index'])->name('api-mobile.dashboard');
 
 // API Frontend SMM order endpoints
 Route::post('/api-frontend/order', [App\Http\Controllers\ApiFrontend\OrderController::class, 'store'])->name('api-frontend.order.store');
 Route::post('/api-frontend/order/history', [App\Http\Controllers\ApiFrontend\OrderController::class, 'history'])->name('api-frontend.order.history');
 
+// API Mobile SMM order endpoints
+Route::get('/api-mobile/order/categories', [App\Http\Controllers\ApiMobile\OrderController::class, 'categories'])->name('api-mobile.order.categories');
+Route::get('/api-mobile/order/services', [App\Http\Controllers\ApiMobile\OrderController::class, 'services'])->name('api-mobile.order.services');
+Route::post('/api-mobile/order', [App\Http\Controllers\ApiMobile\OrderController::class, 'store'])->name('api-mobile.order.store');
+Route::post('/api-mobile/order/history', [App\Http\Controllers\ApiMobile\OrderController::class, 'history'])->name('api-mobile.order.history');
+
 // API Frontend deposit endpoints
 Route::post('/api-frontend/deposit', [App\Http\Controllers\ApiFrontend\DepositController::class, 'store'])->name('api-frontend.deposit.store');
 Route::post('/api-frontend/deposit/history', [App\Http\Controllers\ApiFrontend\DepositController::class, 'history'])->name('api-frontend.deposit.history');
+
+// API Mobile deposit endpoints
+Route::get('/api-mobile/deposit/gateways', [App\Http\Controllers\ApiMobile\DepositController::class, 'gateways'])->name('api-mobile.deposit.gateways');
+Route::post('/api-mobile/deposit', [App\Http\Controllers\ApiMobile\DepositController::class, 'store'])->name('api-mobile.deposit.store');
+Route::post('/api-mobile/deposit/history', [App\Http\Controllers\ApiMobile\DepositController::class, 'history'])->name('api-mobile.deposit.history');
 
 // API Frontend profile endpoints
 Route::post('/api-frontend/profile', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'show'])->name('api-frontend.profile.show');

@@ -1,0 +1,758 @@
+# MOBILE AUTHENTICATION API DOCUMENTATION
+
+This document defines the API endpoints for mobile client authentication, step-by-step registration, and password resetting under the `/api-mobile/auth` prefix.
+
+---
+
+## 1. USER LOGIN
+Authenticates a user and retrieves their SMM API Key. Sets connection type (`koneksi`) to `Mobile`.
+
+* **Endpoint:** `POST /api-mobile/auth/login`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email": "user@example.com", // Can be email, username, or phone
+  "password": "userpassword"
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Login successful.",
+    "user": {
+      "id": 1,
+      "full_name": "John Doe",
+      "username": "johndoe",
+      "email": "user@example.com",
+      "balance": "0.00",
+      "level": "Member",
+      "status": "Active",
+      "koneksi": "Mobile",
+      "api_key": "usr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  }
+  ```
+
+* **403 Forbidden (Account Inactive - Requires OTP):**
+  *Automatically triggers a new OTP send to user's registered WhatsApp.*
+  ```json
+  {
+    "status": "inactive",
+    "message": "Account is not verified. Please use your latest OTP code sent to WhatsApp.",
+    "user_id": 1
+  }
+  ```
+
+* **401 Unauthorized (Invalid Credentials):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid credentials."
+  }
+  ```
+
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "email": ["The email field is required."],
+      "password": ["The password field is required."]
+    }
+  }
+  ```
+
+---
+
+## 2. STEP-BY-STEP REGISTRATION
+
+### STEP 2.1: INITIALIZE REGISTRATION (SEND EMAIL OTP)
+Starts registration by accepting an email. Sends a 6-digit OTP to the email using Brevo.
+
+* **Endpoint:** `POST /api-mobile/auth/register/step1`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email": "user@gmail.com" // Only Gmail, Yahoo, or Outlook domains allowed
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Verification code sent to your email.",
+    "otp_token": "eyJpdiI6Ilp...", // Encrypted stateless token. Keep this for step 1.3
+    "brevo_ready": true
+  }
+  ```
+
+---
+
+### STEP 2.2: RESEND EMAIL OTP
+Resends verification OTP to the specified email.
+
+* **Endpoint:** `POST /api-mobile/auth/register/resend-otp`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email": "user@gmail.com"
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "New email OTP has been sent.",
+    "otp_token": "eyJpdiI6Ilp..." // New encrypted stateless token
+  }
+  ```
+
+---
+
+### STEP 2.3: VERIFY EMAIL OTP
+Verifies the OTP code received in Step 2.1. Returns a secure `email_token` to proceed.
+
+* **Endpoint:** `POST /api-mobile/auth/register/verify-otp`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "otp_token": "eyJpdiI6Ilp...", // Received from step 1.1 or 1.2
+  "otp_code": "123456" // 6-digit OTP code from email
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Email verified successfully.",
+    "email_token": "eyJpdiI6Ilp..." // Secure verification token valid for 20 minutes
+  }
+  ```
+
+* **400 Bad Request (Invalid/Expired OTP):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid email OTP." // Or "OTP code expired. Please request a new OTP."
+  }
+  ```
+
+---
+
+### STEP 2.4: COMPLETE PROFILE DETAILS
+Saves detailed user info and creates the active member account.
+
+* **Endpoint:** `POST /api-mobile/auth/register/step2`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email_token": "eyJpdiI6Ilp...", // Received from step 1.3
+  "full_name": "John Doe",
+  "username": "johndoe",
+  "password": "securepassword123", // Min 8 characters
+  "country_code": "62",
+  "phone": "8123456789" // Leading 0 is trimmed automatically
+}
+```
+
+### Responses:
+* **201 Created (Success):**
+  *Automatically logs user in and returns profile details.*
+  ```json
+  {
+    "status": "success",
+    "message": "Registration successful.",
+    "user": {
+      "id": 1,
+      "full_name": "John Doe",
+      "username": "johndoe",
+      "email": "user@gmail.com",
+      "balance": "0.00",
+      "level": "Member",
+      "status": "Active",
+      "koneksi": "Mobile",
+      "api_key": "usr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  }
+  ```
+
+* **400 Bad Request (Token Expired or Invalid):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid or tampered email token." // Or "Verification token expired. Please verify your email again."
+  }
+  ```
+
+* **409 Conflict (Email Already Registered):**
+  ```json
+  {
+    "status": "error",
+    "message": "This email address has already been registered."
+  }
+  ```
+
+---
+
+## 3. PASSWORD RESET FLOW
+
+### STEP 3.1: REQUEST RESET CODE
+Generates and sends a 6-digit password reset OTP to user's WhatsApp.
+
+* **Endpoint:** `POST /api-mobile/auth/forget`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email": "user@example.com" // Email, username, or phone
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Password reset verification code has been sent to WhatsApp.",
+    "user_id": 1,
+    "email": "user@example.com"
+  }
+  ```
+
+* **404 Not Found (User Missing):**
+  ```json
+  {
+    "status": "error",
+    "message": "No account found with the provided information."
+  }
+  ```
+
+---
+
+### STEP 3.2: SUBMIT NEW PASSWORD (RESET)
+Verifies the reset OTP code and updates the password.
+
+* **Endpoint:** `POST /api-mobile/auth/reset-password`
+* **Content-Type:** `application/json`
+
+### Request Body:
+```json
+{
+  "email": "user@example.com", // Email, username, phone or user_id
+  "otp_code": "123456", // 6-digit OTP code from WhatsApp
+  "password": "newsecurepassword123" // Min 8 characters
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Your password has been successfully reset."
+  }
+  ```
+
+* **400 Bad Request (Invalid/Expired OTP):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid reset OTP code." // Or "Reset OTP code expired."
+  }
+  ```
+
+* **429 Too Many Requests (Exceeded Attempt Limit):**
+  ```json
+  {
+    "status": "error",
+    "message": "Too many OTP attempts. Please request a new reset code."
+  }
+  ```
+
+---
+
+## 4. ALTERNATIVE ACTIVATION OTP FLOW
+*(Used for validating "Not-Active" account states encountered during standard login).*
+
+### 4.1: VERIFY ACTIVATION OTP
+* **Endpoint:** `POST /api-mobile/auth/verify-otp`
+* **Request Body:**
+  ```json
+  {
+    "user_id": 1,
+    "otp_code": "123456"
+  }
+  ```
+* **Response (200 OK):**
+  ```json
+  {
+    "status": "success",
+    "message": "Account successfully verified and activated.",
+    "user": { ... }
+  }
+  ```
+
+### 4.2: RESEND ACTIVATION OTP
+* **Endpoint:** `POST /api-mobile/auth/resend-otp`
+* **Request Body:**
+  ```json
+  {
+    "user_id": 1
+  }
+  ```
+* **Response (200 OK):**
+  ```json
+  {
+    "status": "success",
+    "message": "A new OTP code has been sent to your WhatsApp."
+  }
+  ```
+
+---
+
+## 5. USER DASHBOARD
+Retrieves user balance, balance alerts, order metrics, active ticket counts, recent order & deposit history, recommended SMM services, and filterable chart data.
+
+* **Endpoint:** `POST /api-mobile/dashboard`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>` (or send `api_key`/`key` in body)
+
+### Request Body:
+```json
+{
+  "api_key": "usr_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // Optional if using Bearer token
+  "filter": "week" // Optional. Values: "day", "week", "month", "previous_month", "previous_year" (default: "week")
+}
+```
+
+### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "user": {
+        "id": 1,
+        "full_name": "John Doe",
+        "username": "johndoe",
+        "balance": "100.5432"
+      },
+      "balance_reminder": {
+        "alert": false, // true if balance <= $3.00
+        "message": "" // Warning alert message when alert is true
+      },
+      "metrics": {
+        "total_pending": 2,
+        "total_in_progress": 1,
+        "total_success": 24,
+        "total_error": 3,
+        "total_partial": 0,
+        "active_tickets": 1 // Tickets where status is not "Closed"
+      },
+      "recent_history": {
+        "orders": [
+          {
+            "id": 15,
+            "invoice": "INV-171720",
+            "service_name": "Instagram Followers [Real & Active]",
+            "target": "https://instagram.com/johndoe",
+            "amount": 1000,
+            "price": "1.5000",
+            "status": "Success",
+            "created_at": "2026-06-01 10:10:00"
+          }
+        ],
+        "deposits": [
+          {
+            "id": 4,
+            "invoice": "DEP-171242",
+            "amount": "50.00",
+            "status": "Success",
+            "created_at": "2026-05-28 14:22:15"
+          }
+        ]
+      },
+      "chart": {
+        "filter": "week",
+        "data": [
+          {
+            "label": "Tue, 26 May",
+            "date": "2026-05-26",
+            "orders_count": 5,
+            "orders_amount": 7.5000
+          },
+          {
+            "label": "Wed, 27 May",
+            "date": "2026-05-27",
+            "orders_count": 0,
+            "orders_amount": 0.0000
+          }
+        ]
+      },
+      "recommended_services": [
+        {
+          "id": 8,
+          "name": "TikTok Likes [Instant]",
+          "category": "TikTok Likes",
+          "price": "0.8500",
+          "min": 100,
+          "max": 10000
+        }
+      ]
+    }
+  }
+  ```
+
+* **401 Unauthorized (Missing/Invalid API Key):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid or inactive API key." // Or "API key is missing."
+  }
+  ```
+
+* **400 Bad Request (Invalid Filter):**
+  ```json
+  {
+    "status": "error",
+    "message": "Invalid filter parameter. Allowed values: day, week, month, previous_month, previous_year."
+  }
+  ```
+
+---
+
+## 6. DEPOSIT FEATURES
+
+### 6.1: LIST PAYMENT GATEWAYS
+Retrieves configured and active payment gateways that are ready to accept deposits.
+
+* **Endpoint:** `GET /api-mobile/deposit/gateways`
+* **Headers:** `Authorization: Bearer <api_key>` (or send `api_key`/`key` in query/body)
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "name": "Paypal",
+        "code": "paypal",
+        "min_amount": 1.0,
+        "currency": "USD"
+      },
+      {
+        "name": "Cryptomus",
+        "code": "cryptomus",
+        "min_amount": 1.0,
+        "currency": "USD"
+      }
+    ]
+  }
+  ```
+
+---
+
+### 6.2: CREATE DEPOSIT TRANSACTION
+Registers a pending deposit and initiates the gateway connection. Returns a redirect payment URL.
+
+* **Endpoint:** `POST /api-mobile/deposit`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "amount": 25.00, // Numeric, min: 1
+  "payment_method": "paypal", // "paypal" or "cryptomus"
+  "url_success": "https://myapp.com/payment/success", // Optional. Redirect callback on success
+  "url_cancel": "https://myapp.com/payment/cancel" // Optional. Redirect callback on cancel
+}
+```
+
+#### Responses:
+* **201 Created (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "PayPal transaction created successfully.",
+    "data": {
+      "invoice": "DEP-XXXXXXXXXX",
+      "payment_method": "Paypal",
+      "amount": "25.00",
+      "redirect_url": "https://www.sandbox.paypal.com/checkoutnow?token=EC-XXXXXX" // Redirect user to this URL
+    }
+  }
+  ```
+
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "amount": ["Minimum deposit is $1."],
+      "payment_method": ["The selected payment method is invalid."]
+    }
+  }
+  ```
+
+---
+
+### 6.3: DEPOSIT HISTORY
+Retrieves the user's paginated deposit history.
+
+* **Endpoint:** `POST /api-mobile/deposit/history`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "limit": 10, // Optional, default: 10
+  "page": 1, // Optional, default: 1
+  "status": "Success", // Optional. Filter by status: "Pending", "Success"
+  "search": "DEP-A1" // Optional. Search by invoice ID
+}
+```
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 12,
+        "invoice": "DEP-GHS83KS89A",
+        "amount": "10.00",
+        "status": "Success",
+        "payment_method": "Paypal",
+        "created_at": "2026-05-30 08:12:00"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "per_page": 10,
+      "current_page": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 1
+    }
+  }
+  ```
+
+---
+
+## 7. SMM ORDER FEATURES
+
+### 7.1: LIST SMM CATEGORIES
+Retrieves all active SMM categories.
+
+* **Endpoint:** `GET /api-mobile/order/categories`
+* **Headers:** `Authorization: Bearer <api_key>` (or send `api_key`/`key` in query)
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 1,
+        "name": "Instagram Followers",
+        "code": "ig_followers"
+      }
+    ]
+  }
+  ```
+
+---
+
+### 7.2: LIST SMM SERVICES
+Retrieves active SMM services, optionally filtered by category. Prices automatically adapt depending on whether the user is a reseller.
+
+* **Endpoint:** `GET /api-mobile/order/services`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Query Parameters:
+* `category_id` (integer, optional): Filter by category ID.
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 12,
+        "category_id": 1,
+        "category_name": "Instagram Followers",
+        "name": "Instagram Followers [Real & Fast]",
+        "min_order": 100,
+        "max_order": 10000,
+        "price": "1.5000", // Price per 1,000 orders
+        "type": "Default", // Values: "Default", "Package", "Custom Comments", "Poll", "Subscriptions"
+        "desc": "Best speed, real accounts.",
+        "refill": true
+      }
+    ]
+  }
+  ```
+
+---
+
+### 7.3: PLACE SMM ORDER
+Submits a new SMM order. Performs validation based on service types, checks balance, makes a request to the SMM provider, and deducts the user's balance.
+
+* **Endpoint:** `POST /api-mobile/order`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+* **For `Default` or `Package` service type:**
+  ```json
+  {
+    "id_service_smm": 12,
+    "target": "https://instagram.com/johndoe", // Link to post/profile
+    "amount": 1000 // Quantity to order (within min/max limits)
+  }
+  ```
+* **For `Custom Comments` service type:**
+  ```json
+  {
+    "id_service_smm": 15,
+    "target": "https://instagram.com/johndoe/p/123",
+    "comments": "Great photo!\nAmazing work!\nLove this!" // One comment per line. Amount is calculated from comment lines count.
+  }
+  ```
+* **For `Poll` service type:**
+  ```json
+  {
+    "id_service_smm": 18,
+    "target": "https://telegram.me/poll/1",
+    "amount": 500,
+    "answer_number": "1" // Target answer option
+  }
+  ```
+* **For `Subscriptions` service type:**
+  ```json
+  {
+    "id_service_smm": 20,
+    "target": "johndoe_username",
+    "min": 100,
+    "max": 200,
+    "posts": 5, // Number of posts
+    "delay": 15 // Delay in minutes: 0, 5, 10, 15, 30, 60, 90
+  }
+  ```
+
+*Note: You can also use alias parameters: `service` for `id_service_smm`, `link` for `target`, and `quantity` for `amount`.*
+
+#### Responses:
+* **201 Created (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Order placed successfully!",
+    "data": {
+      "invoice": "INV-XXXXXXXXXX",
+      "order_id": "987654", // SMM Provider order ID
+      "amount": 1000,
+      "price": "1.5000",
+      "balance_remaining": "99.0432",
+      "min_order": 100,
+      "max_order": 10000,
+      "description": "Best speed, real accounts."
+    }
+  }
+  ```
+
+* **400 Bad Request (Insufficient Balance / SMM Provider Error):**
+  ```json
+  {
+    "status": "error",
+    "message": "Insufficient balance to place this order."
+  }
+  ```
+
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "amount": ["Amount must be at least 100."]
+    }
+  }
+  ```
+
+---
+
+### 7.4: ORDER HISTORY
+Retrieves the user's paginated SMM order history.
+
+* **Endpoint:** `POST /api-mobile/order/history`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "limit": 10, // Optional, default: 10
+  "page": 1, // Optional, default: 1
+  "status": "Success", // Optional. Filter by status: "Pending", "In Progres", "Partial", "Cancel", "Error", "Success", "Finish"
+  "search": "INV-A1" // Optional. Search by invoice ID or target link
+}
+```
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 15,
+        "invoice": "INV-HKS83KS89A",
+        "service_name": "Instagram Followers [Real & Fast]",
+        "target": "https://instagram.com/johndoe",
+        "amount": 1000,
+        "price": "1.5000",
+        "status": "Success",
+        "remains": 0,
+        "start_count": 520,
+        "created_at": "2026-05-30 08:12:00"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "per_page": 10,
+      "current_page": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 1
+    }
+  }
+  ```
+
+
+
