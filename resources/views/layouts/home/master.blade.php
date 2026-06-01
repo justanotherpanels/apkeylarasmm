@@ -177,7 +177,7 @@
     <script src="{{ asset('themes/vendors/@popperjs/popper.min.js') }}"></script>
     <script src="{{ asset('themes/vendors/bootstrap/bootstrap.min.js') }}"></script>
     <script src="{{ asset('themes/vendors/is/is.min.js') }}"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+    <script src="https://cdnjs.cloudflare.com/polyfill.min.js?features=window.scroll"></script>
     <script src="{{ asset('themes/vendors/fontawesome/all.min.js') }}"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
