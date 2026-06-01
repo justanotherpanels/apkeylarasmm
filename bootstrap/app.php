@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/v2',
             'webhook/whatsapp/*',
             'api-frontend/*',
+            'api-mobile/*',
         ]);
 
         $middleware->alias([
