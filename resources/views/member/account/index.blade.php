@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Pengaturan Akun</h1>
+    <h1 class="mt-4">Account Settings</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ route('member.index') }}">Dashboard</a></li>
-        <li class="breadcrumb-item active">Pengaturan Akun</li>
+        <li class="breadcrumb-item active">Account Settings</li>
     </ol>
 
     @if(session('success'))
@@ -31,7 +31,7 @@
         <div class="col-xl-8 mb-4">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-dark text-white py-3">
-                    <h6 class="m-0 fw-bold"><i class="fas fa-user-cog me-2"></i>Informasi Akun & Keamanan</h6>
+                    <h6 class="m-0 fw-bold"><i class="fas fa-user-cog me-2"></i>Account Information & Security</h6>
                 </div>
                 <div class="card-body p-4">
                     <form method="POST" action="{{ route('member.account.update') }}">
@@ -50,38 +50,38 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold" for="full_name">Nama Lengkap</label>
-                                <input class="form-control" id="full_name" name="full_name" type="text" value="{{ old('full_name', $user->full_name) }}" required placeholder="Masukkan nama lengkap">
+                                <label class="form-label fw-bold" for="full_name">Full Name</label>
+                                <input class="form-control" id="full_name" name="full_name" type="text" value="{{ old('full_name', $user->full_name) }}" required placeholder="Enter your full name">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label fw-bold" for="country_code">Kode Negara</label>
-                                <input class="form-control" id="country_code" name="country_code" type="text" value="{{ old('country_code', $user->country_code ?? '62') }}" required placeholder="Contoh: 62">
+                                <label class="form-label fw-bold" for="country_code">Country Code</label>
+                                <input class="form-control" id="country_code" name="country_code" type="text" value="{{ old('country_code', $user->country_code ?? '62') }}" required placeholder="Example: 62">
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold" for="phone">Nomor HP</label>
-                                <input class="form-control" id="phone" name="phone" type="text" value="{{ old('phone', $user->phone) }}" required placeholder="Contoh: 8123456789">
+                                <label class="form-label fw-bold" for="phone">Phone Number</label>
+                                <input class="form-control" id="phone" name="phone" type="text" value="{{ old('phone', $user->phone) }}" required placeholder="Example: 8123456789">
                             </div>
                         </div>
 
                         <hr class="my-4">
 
-                        <h6 class="fw-bold mb-3"><i class="fas fa-lock me-2 text-warning"></i>Ganti Password Baru</h6>
+                        <h6 class="fw-bold mb-3"><i class="fas fa-lock me-2 text-warning"></i>Change Password</h6>
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label" for="password">Password Baru</label>
-                                <input class="form-control" id="password" name="password" type="password" placeholder="Kosongkan jika tidak ingin mengubah">
-                                <div class="form-text small text-muted">Minimal 6 karakter.</div>
+                                <label class="form-label" for="password">New Password</label>
+                                <input class="form-control" id="password" name="password" type="password" placeholder="Leave empty if you do not want to change">
+                                <div class="form-text small text-muted">Minimum 6 characters.</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                                <input class="form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Masukkan kembali password baru">
+                                <label class="form-label" for="password_confirmation">Confirm New Password</label>
+                                <input class="form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Re-enter new password">
                             </div>
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary px-4 me-2">Simpan Perubahan</button>
-                            <a href="{{ route('member.index') }}" class="btn btn-secondary px-4">Batal</a>
+                            <button type="submit" class="btn btn-primary px-4 me-2">Save Changes</button>
+                            <a href="{{ route('member.index') }}" class="btn btn-secondary px-4">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -92,15 +92,15 @@
         <div class="col-xl-4 mb-4">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-dark text-white py-3">
-                    <h6 class="m-0 fw-bold"><i class="fas fa-key me-2"></i>API Key Saya</h6>
+                    <h6 class="m-0 fw-bold"><i class="fas fa-key me-2"></i>My API Key</h6>
                 </div>
                 <div class="card-body p-4">
-                    <p class="text-muted small">Gunakan API Key ini untuk melakukan integrasi SMM panel dengan website atau bot Anda.</p>
+                    <p class="text-muted small">Use this API Key to integrate the SMM panel with your website or bot.</p>
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold" for="apiKeyInput">Kunci API</label>
+                        <label class="form-label fw-bold" for="apiKeyInput">API Key</label>
                         <div class="input-group">
-                            <input class="form-control bg-light font-monospace" type="password" value="{{ $user->api_key }}" id="apiKeyInput" placeholder="Belum ada API Key" readonly>
+                            <input class="form-control bg-light font-monospace" type="password" value="{{ $user->api_key }}" id="apiKeyInput" placeholder="No API Key yet" readonly>
                             <button class="btn btn-outline-secondary" type="button" onclick="toggleApiKey(event)"><i class="fa fa-eye"></i></button>
                             @if($user->api_key)
                                 <button class="btn btn-outline-secondary" type="button" onclick="copyApiKey(event)"><i class="fa fa-copy"></i></button>

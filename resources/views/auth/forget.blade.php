@@ -16,6 +16,7 @@
     <meta name="description" content="Forgot Password page. Enter your email to reset your account credentials on {{ $siteName }}.">
     <meta name="author" content="{{ $siteName }}">
     <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
     <link rel="icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
     

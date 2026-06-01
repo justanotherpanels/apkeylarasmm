@@ -275,5 +275,47 @@ Route::post('/api-frontend/profile', [App\Http\Controllers\ApiFrontend\ProfileCo
 Route::post('/api-frontend/profile/update-password', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'updatePassword'])->name('api-frontend.profile.update_password');
 Route::post('/api-frontend/profile/regenerate-api-key', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'regenerateApiKey'])->name('api-frontend.profile.regenerate_api_key');
 
+// XML Sitemap & Robots.txt Routes
+Route::get('/sitemap.xml', function () {
+    $urls = [
+        url('/'),
+        url('/services'),
+        url('/about'),
+        url('/contact'),
+        url('/privacy'),
+        url('/terms'),
+        url('/auth/login'),
+        url('/auth/register'),
+    ];
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+    foreach ($urls as $url) {
+        $xml .= '<url>';
+        $xml .= '<loc>' . htmlspecialchars($url) . '</loc>';
+        $xml .= '<lastmod>' . date('Y-m-d') . '</lastmod>';
+        $xml .= '<changefreq>weekly</changefreq>';
+        $xml .= '<priority>' . ($url === url('/') ? '1.0' : '0.8') . '</priority>';
+        $xml .= '</url>';
+    }
+    $xml .= '</urlset>';
+
+    return response($xml, 200, [
+        'Content-Type' => 'application/xml'
+    ]);
+});
+
+Route::get('/robots.txt', function () {
+    $robots = "User-agent: *\n";
+    $robots .= "Disallow: /admin\n";
+    $robots .= "Disallow: /member\n";
+    $robots .= "\n";
+    $robots .= "Sitemap: " . url('/sitemap.xml') . "\n";
+
+    return response($robots, 200, [
+        'Content-Type' => 'text/plain'
+    ]);
+});
+
 
 
