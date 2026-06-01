@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\WhatsAppController;
 use App\Http\Controllers\Admin\SystemUpdateController;
 use App\Http\Controllers\Admin\BrevoApiController;
+use App\Http\Controllers\Admin\ProfileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -212,6 +213,10 @@ Route::middleware(['admin'])->group(function () {
 
     Route::get('/admin/settings', [SettingsController::class, 'index'])->name('admin.settings.index');
     Route::post('/admin/settings', [SettingsController::class, 'update'])->name('admin.settings.update');
+    
+    Route::get('/admin/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
+    Route::post('/admin/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+
     Route::get('/admin/system-update', [SystemUpdateController::class, 'index'])->name('admin.system-update.index');
     Route::post('/admin/system-update/check', [SystemUpdateController::class, 'check'])->name('admin.system-update.check');
     Route::post('/admin/system-update/run', [SystemUpdateController::class, 'update'])->name('admin.system-update.run');

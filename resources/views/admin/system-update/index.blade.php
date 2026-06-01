@@ -76,15 +76,67 @@
                     </button>
                 </form>
 
-                <form method="POST" action="{{ route('admin.system-update.run') }}" onsubmit="return confirm('Yakin ingin update sistem sekarang? Proses ini akan menjalankan migration database.');">
-                    @csrf
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-download me-1"></i> Update Now
-                    </button>
-                </form>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmUpdateModal">
+                    <i class="fas fa-download me-1"></i> Update Now
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Update -->
+    <div class="modal fade" id="confirmUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0">
+                <div class="modal-header bg-warning text-dark border-0">
+                    <h5 class="modal-title fw-bold" id="confirmUpdateModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Update Sistem
+                    </h5>
+                    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal" aria-label="Close" id="modalCloseBtn"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="modalMainContent">
+                        <p class="mb-3 fw-medium">Apakah Anda yakin ingin melakukan update sistem sekarang?</p>
+                        <div class="alert alert-info mb-0 small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Proses ini akan mengunduh kode terbaru dari repositori, menjalankan migrasi database, dan menyegarkan cache sistem. <strong>Mohon jangan menutup halaman ini selama proses pembaruan berjalan.</strong>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading State (hidden by default) -->
+                    <div id="updateLoadingState" class="text-center py-4 d-none">
+                        <div class="spinner-border text-warning mb-3" style="width: 3rem; height: 3rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h6 class="fw-bold">Sedang melakukan update...</h6>
+                        <p class="text-muted small mb-0">Silakan tunggu, sistem sedang memproses pembaruan.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light p-3" id="modalFooterBtns">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-warning text-dark fw-bold px-4" id="btnExecuteUpdate">
+                        <i class="fas fa-check-circle me-1"></i>Ya, Update Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="updateForm" method="POST" action="{{ route('admin.system-update.run') }}" style="display: none;">
+        @csrf
+    </form>
+
+    <script>
+        document.getElementById('btnExecuteUpdate').addEventListener('click', function() {
+            // Show loading state and hide buttons/content
+            document.getElementById('modalMainContent').classList.add('d-none');
+            document.getElementById('updateLoadingState').classList.remove('d-none');
+            document.getElementById('modalFooterBtns').classList.add('d-none');
+            document.getElementById('modalCloseBtn').classList.add('d-none');
+            
+            // Submit form
+            document.getElementById('updateForm').submit();
+        });
+    </script>
 
     @if(!empty($logs))
     <div class="card mb-4">
