@@ -47,6 +47,8 @@
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                         <li><span class="dropdown-item-text fw-bold text-primary">{{ Auth::user()->full_name ?? 'User' }}</span></li>
                         <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="{{ route('member.account.index') }}"><i class="fas fa-user-cog me-2 text-secondary"></i> Account</a></li>
+                        <li><hr class="dropdown-divider" /></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
@@ -127,7 +129,7 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                            <div class="text-muted">Copyright &copy; <script>document.write(new Date().getFullYear())</script> {{ $setting && $setting->site_name ? $setting->site_name : config('app.name', 'APKEY SMM') }}</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;

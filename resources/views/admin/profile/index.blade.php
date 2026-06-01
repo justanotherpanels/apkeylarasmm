@@ -29,7 +29,7 @@
     @endif
 
     <div class="row">
-        <div class="col-xl-6 col-md-8">
+        <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-user-edit me-1"></i>
@@ -38,34 +38,39 @@
                 <div class="card-body">
                     <form method="POST" action="{{ route('admin.profile.update') }}">
                         @csrf
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Username</label>
-                            <input class="form-control bg-light" id="username" type="text" value="{{ $user->username }}" readonly disabled>
-                            <div class="form-text small text-muted">Username tidak dapat diubah.</div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="username">Username</label>
+                                <input class="form-control bg-light" id="username" type="text" value="{{ $user->username }}" readonly disabled>
+                                <div class="form-text small text-muted">Username tidak dapat diubah.</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="email">Email</label>
+                                <input class="form-control bg-light" id="email" type="email" value="{{ $user->email }}" readonly disabled>
+                                <div class="form-text small text-muted">Email tidak dapat diubah.</div>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="full_name">Nama Lengkap</label>
+                                <input class="form-control" id="full_name" name="full_name" type="text" value="{{ old('full_name', $user->full_name) }}" placeholder="Masukkan nama lengkap" required>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="email">Email</label>
-                            <input class="form-control bg-light" id="email" type="email" value="{{ $user->email }}" readonly disabled>
-                            <div class="form-text small text-muted">Email tidak dapat diubah.</div>
-                        </div>
+                        <hr class="my-3">
 
-                        <hr class="my-4">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="password">Password Baru</label>
+                                <input class="form-control" id="password" name="password" type="password" placeholder="Kosongkan jika tidak ingin mengubah password">
+                                <div class="form-text small text-muted">Minimal 6 karakter.</div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label" for="full_name">Nama Lengkap</label>
-                            <input class="form-control" id="full_name" name="full_name" type="text" value="{{ old('full_name', $user->full_name) }}" placeholder="Masukkan nama lengkap" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" for="password">Password Baru</label>
-                            <input class="form-control" id="password" name="password" type="password" placeholder="Kosongkan jika tidak ingin mengubah password">
-                            <div class="form-text small text-muted">Minimal 6 karakter.</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
-                            <input class="form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Ulangi password baru jika diubah">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="password_confirmation">Konfirmasi Password Baru</label>
+                                <input class="form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Ulangi password baru jika diubah">
+                            </div>
                         </div>
 
                         <div class="mt-4">

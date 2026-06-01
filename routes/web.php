@@ -88,6 +88,8 @@ Route::post('/auth/otp/resend', [AuthController::class, 'resendOtp'])->middlewar
 
 Route::middleware(['auth'])->prefix('member')->name('member.')->group(function () {
     Route::get('/', [App\Http\Controllers\Member\SmmController::class, 'dashboard'])->name('index');
+    Route::get('/account', [App\Http\Controllers\Member\ProfileController::class, 'index'])->name('account.index');
+    Route::post('/account', [App\Http\Controllers\Member\ProfileController::class, 'update'])->name('account.update');
 
     Route::get('/smm/order', [App\Http\Controllers\Member\SmmController::class, 'orderForm'])->name('smm.order');
     Route::post('/smm/order', [App\Http\Controllers\Member\SmmController::class, 'storeOrder'])->name('smm.order.store');
