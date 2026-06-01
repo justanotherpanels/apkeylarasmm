@@ -754,5 +754,183 @@ Retrieves the user's paginated SMM order history.
   }
   ```
 
+---
+
+## 8. SUPPORT TICKET FEATURES
+
+### 8.1: LIST SUPPORT TICKETS
+Retrieves a paginated list of support tickets created by the authenticated mobile user.
+
+* **Endpoint:** `GET /api-mobile/tickets`
+* **Headers:** `Authorization: Bearer <api_key>` (or send `api_key`/`key` in query)
+* **Query Parameters:**
+  - `limit` (integer, optional, default: 10): Number of records per page (max 100).
+  - `page` (integer, optional, default: 1): Page number.
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 1,
+        "subject": "Payment Issue",
+        "status": "Pending", // Possible values: "Pending", "Reply", "Closed"
+        "created_at": "2026-05-31 10:00:00",
+        "updated_at": "2026-05-31 10:00:00"
+      }
+    ],
+    "pagination": {
+      "total": 1,
+      "per_page": 10,
+      "current_page": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 1
+    }
+  }
+  ```
+
+---
+
+### 8.2: CREATE SUPPORT TICKET
+Submits a new support ticket and starts the conversation thread.
+
+* **Endpoint:** `POST /api-mobile/tickets`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "subject": "Order #12345 Failed",
+  "message": "My order has been stuck in pending for 24 hours. Can you check?"
+}
+```
+
+#### Responses:
+* **201 Created (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Ticket created successfully.",
+    "data": {
+      "id": 2,
+      "subject": "Order #12345 Failed",
+      "status": "Pending",
+      "created_at": "2026-06-01 11:15:00",
+      "updated_at": "2026-06-01 11:15:00"
+    }
+  }
+  ```
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "subject": ["The subject field is required."],
+      "message": ["The message field is required."]
+    }
+  }
+  ```
+
+---
+
+### 8.3: VIEW TICKET DETAILS
+Retrieves details of a single ticket including the full chronological conversation thread.
+
+* **Endpoint:** `GET /api-mobile/tickets/{id}`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "id": 2,
+      "subject": "Order #12345 Failed",
+      "status": "Pending",
+      "created_at": "2026-06-01 11:15:00",
+      "updated_at": "2026-06-01 11:15:00",
+      "replies": [
+        {
+          "sender": "user",
+          "name": "John Doe",
+          "message": "My order has been stuck in pending for 24 hours. Can you check?",
+          "created_at": "2026-06-01 11:15:00"
+        }
+      ]
+    }
+  }
+  ```
+* **404 Not Found:**
+  ```json
+  {
+    "status": "error",
+    "message": "Ticket not found."
+  }
+  ```
+
+---
+
+### 8.4: REPLY TO SUPPORT TICKET
+Appends a reply message to the existing support ticket conversation thread.
+
+* **Endpoint:** `POST /api-mobile/tickets/{id}/reply`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "message": "Any updates on this ticket?"
+}
+```
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Reply sent successfully.",
+    "data": {
+      "id": 2,
+      "status": "Reply",
+      "updated_at": "2026-06-01 11:20:00",
+      "replies": [
+        {
+          "sender": "user",
+          "name": "John Doe",
+          "message": "My order has been stuck in pending for 24 hours. Can you check?",
+          "created_at": "2026-06-01 11:15:00"
+        },
+        {
+          "sender": "user",
+          "name": "John Doe",
+          "message": "Any updates on this ticket?",
+          "created_at": "2026-06-01 11:20:00"
+        }
+      ]
+    }
+  }
+  ```
+* **400 Bad Request (Cannot reply to a closed ticket):**
+  ```json
+  {
+    "status": "error",
+    "message": "Cannot reply to a closed ticket."
+  }
+  ```
+* **404 Not Found:**
+  ```json
+  {
+    "status": "error",
+    "message": "Ticket not found."
+  }
+  ```
+
+
 
 

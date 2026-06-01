@@ -299,6 +299,12 @@ Route::get('/api-mobile/deposit/gateways', [App\Http\Controllers\ApiMobile\Depos
 Route::post('/api-mobile/deposit', [App\Http\Controllers\ApiMobile\DepositController::class, 'store'])->name('api-mobile.deposit.store');
 Route::post('/api-mobile/deposit/history', [App\Http\Controllers\ApiMobile\DepositController::class, 'history'])->name('api-mobile.deposit.history');
 
+// API Mobile ticket endpoints
+Route::get('/api-mobile/tickets', [App\Http\Controllers\ApiMobile\TicketController::class, 'index'])->name('api-mobile.tickets.index');
+Route::post('/api-mobile/tickets', [App\Http\Controllers\ApiMobile\TicketController::class, 'store'])->name('api-mobile.tickets.store');
+Route::get('/api-mobile/tickets/{id}', [App\Http\Controllers\ApiMobile\TicketController::class, 'show'])->name('api-mobile.tickets.show');
+Route::post('/api-mobile/tickets/{id}/reply', [App\Http\Controllers\ApiMobile\TicketController::class, 'reply'])->name('api-mobile.tickets.reply');
+
 // API Frontend profile endpoints
 Route::post('/api-frontend/profile', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'show'])->name('api-frontend.profile.show');
 Route::post('/api-frontend/profile/update-password', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'updatePassword'])->name('api-frontend.profile.update_password');
