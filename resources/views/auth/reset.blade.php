@@ -4,6 +4,7 @@
     } catch (\Throwable $e) {
         $setting = null;
     }
+    $siteName = $setting && $setting->site_name ? $setting->site_name : config('app.name', 'Apkey SMM');
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -11,192 +12,213 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="viho admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
-    <meta name="keywords" content="admin template, viho admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
+    <title>Reset Password - {{ $siteName }}</title>
+    <meta name="description" content="Reset your password at {{ $siteName }}. Access high-quality, fast, and cheap social media services instantly.">
+    <meta name="author" content="{{ $siteName }}">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ $setting && $setting->favicon_path ? $setting->favicon_path : asset('themes/images/favicon.png') }}" type="image/x-icon">
-    <title>Reset Password - {{ $setting && $setting->site_name ? $setting->site_name : config('app.name') }}</title>
-    <!-- Google font-->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
-    <!-- Font Awesome-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/fontawesome.css') }}">
-    <!-- ico-font-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/icofont.css') }}">
-    <!-- Themify icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/themify.css') }}">
-    <!-- Flag icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/flag-icon.css') }}">
-    <!-- Feather icon-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/feather-icon.css') }}">
-    <!-- Plugins css start-->
-    <!-- Plugins css Ends-->
-    <!-- Bootstrap css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/bootstrap.css') }}">
-    <!-- App css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('themes/css/color-1.css') }}" media="screen">
-    <!-- Responsive css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('themes/css/responsive.css') }}">
+    
+    <!-- Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                50: '#f5f3ff',
+                100: '#ede9fe',
+                200: '#ddd6fe',
+                300: '#c4b5fd',
+                400: '#a78bfa',
+                500: '#8b5cf6',
+                600: '#7c3aed',
+                700: '#6d28d9',
+                800: '#5b21b6',
+                900: '#4c1d95',
+              }
+            }
+          }
+        }
+      }
+    </script>
     
     <!-- PostHog -->
+    @if(env("POSTHOG_API_KEY"))
     <script>
         !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-        posthog.init('{{ env("POSTHOG_API_KEY", "<ph_project_api_key>") }}', {
+        posthog.init('{{ env("POSTHOG_API_KEY") }}', {
             api_host: '{{ env("POSTHOG_HOST", "https://us.i.posthog.com") }}',
             person_profiles: 'identified_only'
         });
     </script>
-    <!-- End PostHog -->
+    @endif
+    
     {!! $setting->head_code ?? '' !!}
-    <style>
-      .otp-input {
-        width: 50px;
-        height: 55px;
-        text-align: center;
-        font-size: 24px;
-        font-weight: 600;
-        border: 2px solid #ced4da;
-        border-radius: 8px;
-        margin: 0 5px;
-      }
-      .otp-input:focus {
-        border-color: #7366ff;
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(115, 102, 255, 0.25);
-      }
-      .otp-wrapper {
-        display: flex;
-        justify-content: center;
-        margin: 20px 0;
-      }
-    </style>
   </head>
-  <body>
-    <!-- Loader starts-->
-    <div class="loader-wrapper">
-      <div class="theme-loader">    
-        <div class="loader-p"></div>
-      </div>
-    </div>
-    <!-- Loader ends-->
-    <!-- page-wrapper Start-->
-    <section>         
-      <div class="container-fluid p-0">
-        <div class="row">
-          <div class="col-12">
-            <div class="login-card">
-              <div class="card">
-                <div class="card-header pb-0">
-                  <h4>Reset Password</h4>
-                  <span>Enter the OTP code and your new password.</span>
-                </div>
-                <div class="card-body">
-                  <form class="theme-form login-form" method="POST" action="{{ route('password.update') }}">
-                    @csrf
-                    <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
-                    
-                    @if (session('status'))
-                      <div class="alert alert-success mb-4">
-                          {{ session('status') }}
-                      </div>
-                    @endif
+  <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Background elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-primary-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 translate-x-1/2 translate-y-1/2"></div>
 
-                    @if ($errors->any())
-                      <div class="alert alert-danger mb-4">
-                          <ul class="mb-0">
-                              @foreach ($errors->all() as $error)
-                                  <li>{{ $error }}</li>
-                              @endforeach
-                          </ul>
-                      </div>
-                    @endif
-
-                    <div class="form-group">
-                      <label>Email/Username/Phone</label>
-                      <div class="input-group"><span class="input-group-text"><i class="icon-email"></i></span>
-                        <input class="form-control" type="text" name="email" value="{{ $email ?? old('email') }}" required="" placeholder="Email, Username, or Phone" autofocus>
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label>OTP Code</label>
-                      <div class="otp-wrapper">
-                        <input type="text" class="otp-input" maxlength="1" data-index="0" autofocus>
-                        <input type="text" class="otp-input" maxlength="1" data-index="1">
-                        <input type="text" class="otp-input" maxlength="1" data-index="2">
-                        <input type="text" class="otp-input" maxlength="1" data-index="3">
-                        <input type="text" class="otp-input" maxlength="1" data-index="4">
-                        <input type="text" class="otp-input" maxlength="1" data-index="5">
-                      </div>
-                      <input type="hidden" name="otp_code" id="otp_code">
-                    </div>
-
-                    <div class="form-group">
-                      <label>New Password</label>
-                      <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
-                        <input class="form-control" type="password" name="password" required="" placeholder="New Password">
-                        <div class="show-hide"><span class="show">                         </span></div>
-                      </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label>Confirm New Password</label>
-                      <div class="input-group"><span class="input-group-text"><i class="icon-lock"></i></span>
-                        <input class="form-control" type="password" name="password_confirmation" required="" placeholder="Confirm New Password">
-                        <div class="show-hide"><span class="show">                         </span></div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-                <div class="card-footer text-center">
-                  <form class="theme-form" method="POST" action="{{ route('password.update') }}">
-                    @csrf
-                    <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
-                    <input type="hidden" name="otp_code" id="otp_code_footer">
-                    <button class="btn btn-primary" type="submit">Reset Password</button>
-                    <a class="btn btn-secondary" href="{{ route('login') }}">Back to Login</a>
-                  </form>
-                  
-                  <div class="mt-3">
-                    <p class="text-muted mb-2">Didn't receive the code?</p>
-                    <form method="POST" action="{{ route('password.email') }}">
-                      @csrf
-                      <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
-                      <button type="submit" class="btn btn-link p-0">Resend OTP</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
+    <div class="max-w-md w-full space-y-8 relative z-10">
+      <div class="flex flex-col items-center">
+        <!-- Logo -->
+        @if($setting && $setting->logo_path)
+            <img class="h-12 w-auto" src="{{ $setting->logo_path }}" alt="{{ $siteName }}">
+        @else
+            <div class="flex items-center gap-2 text-primary-600 font-bold text-2xl tracking-tight">
+                <i data-lucide="zap" class="w-8 h-8 fill-primary-500"></i>
+                <span>{{ $siteName }}</span>
             </div>
+        @endif
+      </div>
+
+      <div class="bg-white p-8 sm:p-10 rounded-2xl border border-slate-100 shadow-xl shadow-slate-100/50 space-y-6">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Reset Password</h2>
+            <p class="text-sm text-slate-500">Enter the OTP code and your new password.</p>
+        </div>
+
+        @if (session('status'))
+            <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl text-sm" role="alert">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <span class="font-semibold">{{ session('status') }}</span>
+                </div>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-100 text-red-700 p-4 rounded-xl text-sm" role="alert">
+                <div class="flex items-center gap-2 mb-2 font-semibold">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <span>Please correct the errors:</span>
+                </div>
+                <ul class="list-disc list-inside space-y-1 text-xs">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form class="space-y-4" method="POST" action="{{ route('password.update') }}" id="passwordResetForm">
+          @csrf
+          <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+
+          <div class="space-y-1.5">
+            <label for="email_display" class="text-xs font-semibold text-slate-700 tracking-wide block">Email/Username/Phone</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i data-lucide="user" class="w-5 h-5"></i>
+              </span>
+              <input id="email_display" name="email" type="text" value="{{ $email ?? old('email') }}" required placeholder="Email, Username, or Phone" class="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-sm" autofocus>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-slate-700 tracking-wide block text-center">OTP Verification Code</label>
+            <div class="flex justify-center gap-2 my-2">
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="0" autofocus>
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="1">
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="2">
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="3">
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="4">
+              <input type="text" class="otp-input w-12 h-12 text-center text-xl font-semibold border-2 border-slate-200 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 focus:outline-none transition-all duration-200" maxlength="1" data-index="5">
+            </div>
+            <input type="hidden" name="otp_code" id="otp_code">
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="password" class="text-xs font-semibold text-slate-700 tracking-wide block">New Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i data-lucide="lock" class="w-5 h-5"></i>
+              </span>
+              <input id="password" name="password" type="password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-sm">
+              <button type="button" onclick="togglePasswordVisibility('password', 'passwordToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                <i id="passwordToggleIcon" data-lucide="eye" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="password_confirmation" class="text-xs font-semibold text-slate-700 tracking-wide block">Confirm New Password</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i data-lucide="lock" class="w-5 h-5"></i>
+              </span>
+              <input id="password_confirmation" name="password_confirmation" type="password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-sm">
+              <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'passwordConfirmToggleIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors">
+                <i id="passwordConfirmToggleIcon" data-lucide="eye" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 shadow-lg shadow-primary-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200">
+              <i data-lucide="key-round" class="w-4 h-4"></i>
+              <span>Reset Password</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="flex flex-col gap-3 text-center pt-2">
+          <p class="text-xs text-slate-500 font-medium flex items-center justify-center gap-1.5">
+            <span>Remembered your password?</span>
+            <a href="{{ route('login') }}" class="font-bold text-primary-600 hover:text-primary-700 transition-colors">Sign In</a>
+          </p>
+
+          <div class="border-t border-slate-100 pt-3">
+            <p class="text-xs text-slate-500 font-medium">Didn't receive the code?</p>
+            <form method="POST" action="{{ route('password.email') }}" class="mt-1">
+              @csrf
+              <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+              <button type="submit" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition-colors">Resend OTP</button>
+            </form>
           </div>
         </div>
       </div>
-    </section>
-    <!-- page-wrapper end-->
+    </div>
+
     <!-- latest jquery-->
-    <script src="{{ asset('themes/js/jquery-3.5.1.min.js') }}"></script>
-    <!-- feather icon js-->
-    <script src="{{ asset('themes/js/icons/feather-icon/feather.min.js') }}"></script>
-    <script src="{{ asset('themes/js/icons/feather-icon/feather-icon.js') }}"></script>
-    <!-- Sidebar jquery-->
-    <script src="{{ asset('themes/js/config.js') }}"></script>
-    <!-- Bootstrap js-->
-    <script src="{{ asset('themes/js/bootstrap/popper.min.js') }}"></script>
-    <script src="{{ asset('themes/js/bootstrap/bootstrap.min.js') }}"></script>
-    <!-- Plugins JS start-->
-    <!-- Plugins JS Ends-->
-    <!-- Theme js-->
-    <script src="{{ asset('themes/js/script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      lucide.createIcons();
+
+      function togglePasswordVisibility(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const toggleIcon = document.getElementById(iconId);
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.setAttribute('data-lucide', 'eye-off');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+      }
+    </script>
+    
     <!-- OTP Input Script -->
     <script>
       $(document).ready(function() {
         const otpInputs = $('.otp-input');
         const otpHidden = $('#otp_code');
-        const otpHiddenFooter = $('#otp_code_footer');
 
         // Auto focus next input
         otpInputs.on('input', function() {
@@ -234,7 +256,7 @@
           });
 
           if (digits.length > 0) {
-            otpInputs.eq(Math.min(digits.length, 5)).focus();
+            otpInputs.eq(Math.min(digits.length - 1, 5)).focus();
           }
 
           updateOtpValue();
@@ -246,7 +268,6 @@
             otp += $(this).val();
           });
           otpHidden.val(otp);
-          otpHiddenFooter.val(otp);
         }
       });
     </script>

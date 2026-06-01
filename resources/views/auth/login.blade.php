@@ -12,7 +12,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - {{ $siteName }}</title>
+    <title>Boost Your Social Media with Real Services - {{ $siteName }}</title>
     <meta name="description" content="Log in to your account at {{ $siteName }}. Access high-quality, fast, and cheap social media services instantly.">
     <meta name="keywords" content="smm panel, cheap followers, buy followers, buy subscribers, social media marketing, cheapest smm panel">
     <meta name="author" content="{{ $siteName }}">
@@ -22,7 +22,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="Login - {{ $siteName }}">
+    <meta property="og:title" content="Boost Your Social Media with Real Services - {{ $siteName }}">
     <meta property="og:description" content="Log in to your account at {{ $siteName }}. Access high-quality, fast, and cheap social media services instantly.">
 
     <!-- Twitter -->

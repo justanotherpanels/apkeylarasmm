@@ -88,8 +88,6 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
-            'country_code' => 'required|string|max:5',
-            'phone' => 'required|string|max:20',
         ]);
 
         $allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'outlook.co.id'];
@@ -99,24 +97,15 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'Email only allowed from Gmail, Yahoo, or Outlook.'])->withInput();
         }
 
-        $phone = ltrim($request->phone, '0');
-        $fullPhone = $request->country_code . $phone;
-
         $emailOtp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $whatsappOtp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         $brevo = BrevoApi::where('status', 'Active')->first();
         $brevoReady = $brevo && !empty($brevo->api_config['api_key']) && !empty($brevo->api_config['sender_email']);
         
         $request->session()->put('register_step1', [
             'email' => $request->email,
-            'country_code' => $request->country_code,
-            'phone' => $phone,
-            'full_phone' => $fullPhone,
             'email_otp' => $emailOtp,
-            'whatsapp_otp' => $whatsappOtp,
             'email_verified' => false,
-            'whatsapp_verified' => false,
             'otp_expires_at' => now()->addMinutes(10),
             'brevo_ready' => $brevoReady,
         ]);
@@ -124,9 +113,8 @@ class AuthController extends Controller
         if ($brevoReady) {
             $this->sendEmailOtp($request->email, $emailOtp);
         }
-        $this->sendWhatsAppOtp($fullPhone, $whatsappOtp);
 
-        return view('auth.register', ['step' => 1, 'showVerification' => true, 'brevoReady' => $brevoReady, 'emailVerified' => false, 'whatsappVerified' => false]);
+        return view('auth.register', ['step' => 1, 'showVerification' => true, 'brevoReady' => $brevoReady, 'emailVerified' => false]);
     }
 
     public function verifyEmailOtp(Request $request)
@@ -150,71 +138,21 @@ class AuthController extends Controller
             $step1['email_verified'] = true;
             $request->session()->put('register_step1', $step1);
 
-            if ($step1['email_verified'] && $step1['whatsapp_verified']) {
-                return view('auth.register', ['step' => 2]);
-            }
-
-            return view('auth.register', [
-                'step' => 1, 
-                'showVerification' => true, 
-                'brevoReady' => $step1['brevo_ready'] ?? false, 
-                'emailVerified' => true,
-                'whatsappVerified' => $step1['whatsapp_verified'] ?? false
-            ]);
+            return view('auth.register', ['step' => 2]);
         }
 
         return view('auth.register', [
             'step' => 1, 
             'showVerification' => true, 
             'brevoReady' => $step1['brevo_ready'] ?? false, 
-            'emailVerified' => $step1['email_verified'] ?? false,
-            'whatsappVerified' => $step1['whatsapp_verified'] ?? false,
+            'emailVerified' => false,
             'errors' => (object) ['email_otp' => $error]
         ]);
     }
 
     public function verifyWhatsAppOtp(Request $request)
     {
-        $step1 = $request->session()->get('register_step1');
-        
-        if (!$step1) {
-            return redirect()->route('register')->withErrors(['error' => 'Session expired. Please start over.']);
-        }
-
-        $error = null;
-        if (now()->gt($step1['otp_expires_at'])) {
-            $error = 'OTP expired. Please request new OTP.';
-        }
-
-        if (!$error && $request->whatsapp_otp !== $step1['whatsapp_otp']) {
-            $error = 'Invalid WhatsApp OTP.';
-        }
-
-        if (!$error) {
-            $step1['whatsapp_verified'] = true;
-            $request->session()->put('register_step1', $step1);
-
-            if ($step1['email_verified'] && $step1['whatsapp_verified']) {
-                return view('auth.register', ['step' => 2]);
-            }
-
-            return view('auth.register', [
-                'step' => 1, 
-                'showVerification' => true, 
-                'brevoReady' => $step1['brevo_ready'] ?? false, 
-                'emailVerified' => $step1['email_verified'] ?? false,
-                'whatsappVerified' => true
-            ]);
-        }
-
-        return view('auth.register', [
-            'step' => 1, 
-            'showVerification' => true, 
-            'brevoReady' => $step1['brevo_ready'] ?? false, 
-            'emailVerified' => $step1['email_verified'] ?? false,
-            'whatsappVerified' => $step1['whatsapp_verified'] ?? false,
-            'errors' => (object) ['whatsapp_otp' => $error]
-        ]);
+        return redirect()->route('register')->withErrors(['error' => 'WhatsApp verification is not required.']);
     }
 
     public function resendEmailOtp(Request $request)
@@ -236,57 +174,40 @@ class AuthController extends Controller
             'step' => 1, 
             'showVerification' => true, 
             'brevoReady' => $step1['brevo_ready'] ?? false, 
-            'emailVerified' => $step1['email_verified'] ?? false,
-            'whatsappVerified' => $step1['whatsapp_verified'] ?? false,
+            'emailVerified' => false,
             'success' => 'New email OTP has been sent.'
         ]);
     }
 
     public function resendWhatsAppOtp(Request $request)
     {
-        $step1 = $request->session()->get('register_step1');
-        
-        if (!$step1) {
-            return redirect()->route('register')->withErrors(['error' => 'Session expired. Please start over.']);
-        }
-
-        $whatsappOtp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $step1['whatsapp_otp'] = $whatsappOtp;
-        $step1['otp_expires_at'] = now()->addMinutes(10);
-        $request->session()->put('register_step1', $step1);
-
-        $this->sendWhatsAppOtp($step1['full_phone'], $whatsappOtp);
-
-        return view('auth.register', [
-            'step' => 1, 
-            'showVerification' => true, 
-            'brevoReady' => $step1['brevo_ready'] ?? false, 
-            'emailVerified' => $step1['email_verified'] ?? false,
-            'whatsappVerified' => $step1['whatsapp_verified'] ?? false,
-            'success' => 'New WhatsApp OTP has been sent.'
-        ]);
+        return redirect()->route('register')->withErrors(['error' => 'WhatsApp verification is not required.']);
     }
 
     public function registerStep2(Request $request)
     {
         $step1 = $request->session()->get('register_step1');
         
-        if (!$step1 || !$step1['email_verified'] || !$step1['whatsapp_verified']) {
-            return redirect()->route('register')->withErrors(['error' => 'Please verify email and WhatsApp first.']);
+        if (!$step1 || !$step1['email_verified']) {
+            return redirect()->route('register')->withErrors(['error' => 'Please verify email first.']);
         }
 
         $request->validate([
             'full_name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'country_code' => 'required|string|max:5',
+            'phone' => 'required|string|max:20',
         ]);
+
+        $phone = ltrim($request->phone, '0');
 
         $user = User::create([
             'full_name' => $request->full_name,
             'username' => $request->username,
             'email' => $step1['email'],
-            'country_code' => $step1['country_code'],
-            'phone' => $step1['phone'],
+            'country_code' => $request->country_code,
+            'phone' => $phone,
             'password' => Hash::make($request->password),
             'level' => 'Member',
             'status' => 'Active',

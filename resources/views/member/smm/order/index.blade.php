@@ -1,6 +1,10 @@
 @extends('layouts.member.master')
 
 @section('content')
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
 <div class="container-fluid px-4">
     <h1 class="mt-4">New Order</h1>
     <ol class="breadcrumb mb-4">
@@ -185,6 +189,11 @@
 @endsection
 
 @section('js')
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
 function copyCurlCode() {
     const code = document.getElementById('curlCodeSnippet').innerText;
@@ -196,6 +205,19 @@ function copyCurlCode() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2
+    $('#categorySelect').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Choose Category --',
+        width: '100%'
+    });
+
+    $('#serviceSelect').select2({
+        theme: 'bootstrap-5',
+        placeholder: '-- Choose Service --',
+        width: '100%'
+    });
+
     const categorySelect = document.getElementById('categorySelect');
     const serviceSelect = document.getElementById('serviceSelect');
     const serviceDescription = document.getElementById('serviceDescription');
@@ -310,9 +332,10 @@ echo $response;`;
     }
 
     // Load services when category changes
-    categorySelect.addEventListener('change', function() {
+    $('#categorySelect').on('change', function() {
         const categoryId = this.value;
         serviceSelect.innerHTML = '<option value="">-- Choose Service --</option>';
+        $('#serviceSelect').trigger('change');
         serviceDescription.value = '';
         currentService = null;
         loadedServices = [];
@@ -341,11 +364,13 @@ echo $response;`;
                     serviceSelect.appendChild(option);
                 });
 
+                // Trigger select2 update
+                $('#serviceSelect').trigger('change');
+
                 // Check if there is an old value or pre-selected service to select
                 const oldServiceId = "{{ old('id_service_smm', $selectedService ? $selectedService->id : '') }}";
                 if (oldServiceId) {
-                    serviceSelect.value = oldServiceId;
-                    serviceSelect.dispatchEvent(new Event('change'));
+                    $('#serviceSelect').val(oldServiceId).trigger('change');
                 }
             })
             .catch(err => {
@@ -355,7 +380,7 @@ echo $response;`;
     });
 
     // Handle service changes
-    serviceSelect.addEventListener('change', function() {
+    $('#serviceSelect').on('change', function() {
         const serviceId = this.value;
         serviceDescription.value = '';
         currentService = null;
@@ -419,7 +444,7 @@ echo $response;`;
 
     // Handle old category value trigger on page load
     if (categorySelect.value) {
-        categorySelect.dispatchEvent(new Event('change'));
+        $('#categorySelect').trigger('change');
     }
 });
 </script>
