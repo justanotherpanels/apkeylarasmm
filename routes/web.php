@@ -305,6 +305,12 @@ Route::post('/api-mobile/tickets', [App\Http\Controllers\ApiMobile\TicketControl
 Route::get('/api-mobile/tickets/{id}', [App\Http\Controllers\ApiMobile\TicketController::class, 'show'])->name('api-mobile.tickets.show');
 Route::post('/api-mobile/tickets/{id}/reply', [App\Http\Controllers\ApiMobile\TicketController::class, 'reply'])->name('api-mobile.tickets.reply');
 
+// API Mobile account endpoints
+Route::get('/api-mobile/account', [App\Http\Controllers\ApiMobile\AccountController::class, 'show'])->name('api-mobile.account.show');
+Route::post('/api-mobile/account/update', [App\Http\Controllers\ApiMobile\AccountController::class, 'updateProfile'])->name('api-mobile.account.update');
+Route::post('/api-mobile/account/change-password', [App\Http\Controllers\ApiMobile\AccountController::class, 'changePassword'])->name('api-mobile.account.change_password');
+Route::post('/api-mobile/account/regenerate-api-key', [App\Http\Controllers\ApiMobile\AccountController::class, 'regenerateApiKey'])->name('api-mobile.account.regenerate_api_key');
+
 // API Frontend profile endpoints
 Route::post('/api-frontend/profile', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'show'])->name('api-frontend.profile.show');
 Route::post('/api-frontend/profile/update-password', [App\Http\Controllers\ApiFrontend\ProfileController::class, 'updatePassword'])->name('api-frontend.profile.update_password');

@@ -931,6 +931,140 @@ Appends a reply message to the existing support ticket conversation thread.
   }
   ```
 
+---
+
+## 9. ACCOUNT & PROFILE FEATURES
+
+### 9.1: GET ACCOUNT DETAILS
+Retrieves the profile data of the authenticated mobile user.
+
+* **Endpoint:** `GET /api-mobile/account`
+* **Headers:** `Authorization: Bearer <api_key>` (or send `api_key`/`key` in query)
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "data": {
+      "id": 12,
+      "full_name": "John Doe",
+      "username": "johndoe",
+      "email": "johndoe@gmail.com",
+      "country_code": "+62",
+      "phone": "8123456789",
+      "balance": "150.5000",
+      "level": "Member",
+      "status": "Active",
+      "koneksi": "Mobile",
+      "api_key": "usr_abc123...",
+      "created_at": "2026-05-30 08:00:00"
+    }
+  }
+  ```
+
+---
+
+### 9.2: UPDATE ACCOUNT PROFILE
+Updates the user's phone number and country code.
+
+* **Endpoint:** `POST /api-mobile/account/update`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "country_code": "+62",
+  "phone": "08129876543" // Leading zero will be stripped automatically
+}
+```
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Account details updated successfully.",
+    "data": {
+      "country_code": "+62",
+      "phone": "8129876543"
+    }
+  }
+  ```
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "country_code": ["The country code field is required."],
+      "phone": ["The phone field is required."]
+    }
+  }
+  ```
+
+---
+
+### 9.3: CHANGE PASSWORD
+Updates the user's login password.
+
+* **Endpoint:** `POST /api-mobile/account/change-password`
+* **Content-Type:** `application/json`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Request Body:
+```json
+{
+  "current_password": "oldpassword123",
+  "password": "newpassword123",
+  "password_confirmation": "newpassword123"
+}
+```
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "Password changed successfully."
+  }
+  ```
+* **400 Bad Request (Incorrect Password):**
+  ```json
+  {
+    "status": "error",
+    "message": "Current password is incorrect."
+  }
+  ```
+* **422 Unprocessable Content (Validation Fail):**
+  ```json
+  {
+    "status": "error",
+    "errors": {
+      "password": ["The password confirmation does not match."]
+    }
+  }
+  ```
+
+---
+
+### 9.4: REGENERATE API KEY
+Generates and registers a new random API key for the authenticated user.
+
+* **Endpoint:** `POST /api-mobile/account/regenerate-api-key`
+* **Headers:** `Authorization: Bearer <api_key>`
+
+#### Responses:
+* **200 OK (Success):**
+  ```json
+  {
+    "status": "success",
+    "message": "API key regenerated successfully.",
+    "api_key": "usr_xyz789..."
+  }
+  ```
+
+
 
 
 
